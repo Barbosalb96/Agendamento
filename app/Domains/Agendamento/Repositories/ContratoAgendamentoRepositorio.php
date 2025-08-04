@@ -6,5 +6,5 @@ interface ContratoAgendamentoRepositorio
 {
     public function salvar(array $agendamento);
     public function cancelar(string $id): void;
-    public function buscar();
+    public function buscar(array $filter);
 }

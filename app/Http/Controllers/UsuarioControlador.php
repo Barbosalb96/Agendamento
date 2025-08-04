@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Application\Usuarios\Servicos\LoginUsuarioServico;
@@ -23,11 +22,11 @@ class UsuarioControlador extends Controller
             return response()->json(['mensagem' => 'Usuário ou senha inválidos'], 401);
         }
         $userModel = User::find($usuario->id);
-        $token = $userModel->createToken('api-token')->plainTextToken;
+        $token     = $userModel->createToken('api-token')->plainTextToken;
 
         return response()->json(['token' => $token, 'user' => [
-            'id' => $usuario->id,
-            'nome' => $usuario->nome,
+            'id'    => $usuario->id,
+            'nome'  => $usuario->nome,
             'email' => $usuario->email,
         ]]);
     }
@@ -58,19 +57,24 @@ class UsuarioControlador extends Controller
 
         $agendamento = Agendamento::where('uuid', $uuid)->first();
 
-        if (!$agendamento) {
+        if (! $agendamento) {
             return response()->json(['mensagem' => 'QR Code inválido ou agendamento não encontrado']);
+        }
+        $invalid = $agendamento->data >= Carbon::now() && $agendamento->horario > Carbon::now()->format('H:i');
+
+        if (! $invalid) {
+            return response()->json(['mensagem' => 'QR Code inválido horario de agendamento superior a hora marcada']);
         }
 
         return response()->json([
-            'mensagem' => 'QR Code válido',
+            'mensagem'    => 'QR Code válido',
             'agendamento' => [
-                'data' => $agendamento->data_formatada ?? Carbon::parse($agendamento->data)->format('d/m/Y'),
-                'horario' => $agendamento->horario_formatado ?? substr($agendamento->horario, 0, 5),
-                'grupo' => $agendamento->grupo ? 'Sim' : 'Não',
+                'data'       => $agendamento->data_formatada ?? Carbon::parse($agendamento->data)->format('d/m/Y'),
+                'horario'    => $agendamento->horario_formatado ?? substr($agendamento->horario, 0, 5),
+                'grupo'      => $agendamento->grupo ? 'Sim' : 'Não',
                 'quantidade' => $agendamento->quantidade,
                 'observacao' => $agendamento->observacao,
-            ]
+            ],
         ]);
     }
 }

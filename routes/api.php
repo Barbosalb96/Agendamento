@@ -9,15 +9,14 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
-Route::prefix('agendamento')->group(function () {
+Route::prefix('agendamento')->middleware('auth:sanctum')->group(function () {
     Route::get('/', [AgendamentoControlador::class, 'index']);
     Route::post('/', [AgendamentoControlador::class, 'agendar']);
-})->middleware('auth:sanctum');
+});
 
 Route::post('/login', [UsuarioControlador::class, 'login']);
 Route::post('/password/reset', [UsuarioControlador::class, 'resetSenha']);
 Route::post('/password/request-reset', [UsuarioControlador::class, 'requestReset']);
-
 
 Route::get('validar-qrcode/{uuid}', [UsuarioControlador::class, 'validarQRCode'])
     ->name('validar-qrcode');

@@ -7,6 +7,9 @@ use App\Application\Agendamentos\Servicos\ListarAgendamentoServico;
 use App\Http\Requests\StoreAgendamentoRequest;
 use App\Http\Resources\AgendamentosResource;
 use Carbon\Carbon;
+use Exception;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class AgendamentoControlador extends Controller
 {
@@ -17,27 +20,28 @@ class AgendamentoControlador extends Controller
     {
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $response = $this->listarAgendamentoSerico->executar();
+        $response = $this->listarAgendamentoSerico->executar(
+            $request->all()
+        );
 
         return AgendamentosResource::collection($response);
-
     }
 
     /**
      * Exibe a lista de agendamentos do usuário autenticado.
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
-    public function agendar(StoreAgendamentoRequest $agendarRequest)
+    public function agendar(StoreAgendamentoRequest $storeAgendamentoRequest)
     {
         try {
             $this->criarAgendamentoServico->executar(
-                $agendarRequest->validated()
+                $storeAgendamentoRequest->validated()
             );
             return response()->json(['mensagem' => 'Agendamento realizado com sucesso']);
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             throw $exception;
         }
 

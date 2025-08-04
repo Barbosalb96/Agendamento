@@ -1,5 +1,7 @@
 <?php
+
 namespace App\Http\Requests;
+
 use App\Domains\Agendamento\Entities\Agendamento;
 use App\Models\DiasFechados;
 use Illuminate\Foundation\Http\FormRequest;
@@ -15,10 +17,10 @@ class StoreAgendamentoRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'uuid'        => ['nullable', 'uuid'],
-            'user_id'     => ['required', 'exists:users,id'],
-            'data'        => ['required', 'date'],
-            'horario'     => [
+            'uuid' => ['nullable', 'uuid'],
+            'user_id' => ['required', 'exists:users,id'],
+            'data' => ['required', 'date'],
+            'horario' => [
                 'required',
                 'date_format:H:i',
                 function ($attribute, $value, $fail) {
@@ -28,9 +30,9 @@ class StoreAgendamentoRequest extends FormRequest
                     }
                 },
             ],
-            'grupo'       => ['nullable', 'boolean'],
-            'observacao'  => ['nullable', 'string'],
-            'quantidade'  => ['required', 'integer', 'min:1', 'max:50'],
+            'grupo' => ['nullable', 'boolean'],
+            'observacao' => ['nullable', 'string'],
+            'quantidade' => ['required', 'integer', 'min:1', 'max:50'],
         ];
     }
 
@@ -40,10 +42,15 @@ class StoreAgendamentoRequest extends FormRequest
             $data = $this->input('data');
             $horario = $this->input('horario');
             $userId = $this->input('user_id');
-            $quantidade = (int) $this->input('quantidade');
+            $grupo = $this->input('grupo');
+            $quantidade = (int)$this->input('quantidade');
 
             if (!$data || !$horario || !$quantidade || !$userId) {
                 return;
+            }
+
+            if ($grupo == false && $quantidade > 1) {
+                $validator->errors()->add('data', 'somente grupos podem ter mais de uma pessoa na quantidade.');
             }
 
             $dataAgendada = Carbon::parse($data)->startOfDay();
@@ -58,7 +65,6 @@ class StoreAgendamentoRequest extends FormRequest
                 $validator->errors()->add('data', 'Não é possível agendar nesta data, pois está marcada como fechada.');
             }
 
-            // Verificar total de pessoas já agendadas neste dia e horário
             $totalAgendado = Agendamento::whereDate('data', $data)
                 ->where('horario', $horario)
                 ->sum('quantidade');
@@ -93,16 +99,16 @@ class StoreAgendamentoRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'user_id.required'     => 'O campo usuário é obrigatório.',
-            'user_id.exists'       => 'O usuário informado não existe.',
-            'data.required'        => 'A data do agendamento é obrigatória.',
-            'data.date'            => 'A data informada é inválida.',
-            'horario.required'     => 'O horário do agendamento é obrigatório.',
-            'horario.date_format'  => 'O horário deve estar no formato HH:mm.',
-            'quantidade.required'  => 'Informe a quantidade de pessoas.',
-            'quantidade.integer'   => 'A quantidade deve ser um número inteiro.',
-            'quantidade.min'       => 'A quantidade mínima é 1.',
-            'quantidade.max'       => 'A quantidade máxima por agendamento é de 50 pessoas.',
+            'user_id.required' => 'O campo usuário é obrigatório.',
+            'user_id.exists' => 'O usuário informado não existe.',
+            'data.required' => 'A data do agendamento é obrigatória.',
+            'data.date' => 'A data informada é inválida.',
+            'horario.required' => 'O horário do agendamento é obrigatório.',
+            'horario.date_format' => 'O horário deve estar no formato HH:mm.',
+            'quantidade.required' => 'Informe a quantidade de pessoas.',
+            'quantidade.integer' => 'A quantidade deve ser um número inteiro.',
+            'quantidade.min' => 'A quantidade mínima é 1.',
+            'quantidade.max' => 'A quantidade máxima por agendamento é de 50 pessoas.',
         ];
     }
 }

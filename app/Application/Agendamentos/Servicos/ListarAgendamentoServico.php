@@ -10,8 +10,8 @@ class ListarAgendamentoServico
         protected ContratoAgendamentoRepositorio $repositorio
     ) {}
 
-    public function executar()
+    public function executar(array $filter)
     {
-       return $this->repositorio->buscar();
+       return $this->repositorio->buscar($filter);
     }
 }
