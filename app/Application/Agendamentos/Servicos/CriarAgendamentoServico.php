@@ -11,24 +11,21 @@ class CriarAgendamentoServico
 {
     public function __construct(
         protected ContratoAgendamentoRepositorio $repositorio
-    )
-    {
-    }
+    ) {}
 
     public function executar(array $agendamento): void
     {
         try {
             DB::beginTransaction();
             $agendamento = $this->repositorio->salvar($agendamento);
-//            Mail::to($agendamento->user->email)->send(
-//                new AgendamentoMail($agendamento)
-//            );
+            //            Mail::to($agendamento->user->email)->send(
+            //                new AgendamentoMail($agendamento)
+            //            );
             DB::commit();
-        }catch (\Exception $exception){
+        } catch (\Exception $exception) {
             DB::rollBack();
             throw $exception;
         }
-
 
     }
 }

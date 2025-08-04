@@ -43,9 +43,9 @@ class StoreAgendamentoRequest extends FormRequest
             $horario = $this->input('horario');
             $userId = $this->input('user_id');
             $grupo = $this->input('grupo');
-            $quantidade = (int)$this->input('quantidade');
+            $quantidade = (int) $this->input('quantidade');
 
-            if (!$data || !$horario || !$quantidade || !$userId) {
+            if (! $data || ! $horario || ! $quantidade || ! $userId) {
                 return;
             }
 

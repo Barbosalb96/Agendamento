@@ -3,8 +3,8 @@
 namespace Database\Seeders;
 
 use App\Models\DiasFechados;
-use Illuminate\Database\Seeder;
 use Carbon\Carbon;
+use Illuminate\Database\Seeder;
 
 class DiasFechadosSeeder extends Seeder
 {

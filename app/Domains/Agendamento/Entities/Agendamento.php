@@ -18,7 +18,7 @@ class Agendamento extends Model
         parent::boot();
 
         static::creating(function ($user) {
-            $user->uuid = (string)Str::uuid();
+            $user->uuid = (string) Str::uuid();
         });
     }
 
@@ -43,13 +43,14 @@ class Agendamento extends Model
     {
         return $this->belongsTo(User::class);
     }
+
     public function getDataFormatadaAttribute(): string
     {
         return $this->data->format('d/m/Y');
     }
+
     public function getHorarioFormatadoAttribute(): string
     {
         return $this->horario->format('H:i');
     }
-
 }

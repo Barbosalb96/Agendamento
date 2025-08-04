@@ -12,6 +12,6 @@ class ListarAgendamentoServico
 
     public function executar(array $filter)
     {
-       return $this->repositorio->buscar($filter);
+        return $this->repositorio->buscar($filter);
     }
 }

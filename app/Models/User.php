@@ -30,6 +30,7 @@ class User extends Authenticatable
         'email',
         'password',
     ];
+
     protected $hidden = [
         'password',
         'remember_token',
@@ -55,4 +56,3 @@ class User extends Authenticatable
         return auth()->user()->perfil == 'admin';
     }
 }
-

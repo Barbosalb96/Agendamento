@@ -1,9 +1,13 @@
 <?php
 
 use App\Http\Middleware\ForceJsonMiddleware;
+use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -29,5 +33,36 @@ return Application::configure(basePath: dirname(__DIR__))
                 'message' => 'Rota ou recurso não encontrado.',
             ], 404);
         });
+        $exceptions->renderable(function (AuthenticationException $e, $request) {
+            return response()->json([
+                'message' => 'Você precisa estar autenticado para acessar este recurso.',
+            ], 401);
+        });
 
+        // 403 - Sem permissão
+        $exceptions->renderable(function (AuthorizationException $e, $request) {
+            return response()->json([
+                'message' => 'Você não tem permissão para acessar este recurso.',
+            ], 403);
+        });
+
+        // 422 - Erros de validação
+        $exceptions->renderable(function (ValidationException $e, $request) {
+            return response()->json([
+                'message' => 'Os dados fornecidos são inválidos.',
+                'errors' => $e->errors(),
+            ], 422);
+        });
+
+        // 500 - Erro interno genérico
+        $exceptions->renderable(function (Throwable $e, $request) {
+            if ($e instanceof HttpException) {
+                return null; // já tratado por outro renderable
+            }
+
+            return response()->json([
+                'message' => 'Ocorreu um erro inesperado no servidor. Tente novamente mais tarde.',
+                // 'debug' => $e->getMessage(), // habilite apenas em DEV
+            ], 500);
+        });
     })->create();

@@ -14,12 +14,10 @@ use Illuminate\Http\Request;
 class AgendamentoControlador extends Controller
 {
     public function __construct(
-        private CriarAgendamentoServico    $criarAgendamentoServico,
-        private ListarAgendamentoServico   $listarAgendamentoSerico,
+        private CriarAgendamentoServico $criarAgendamentoServico,
+        private ListarAgendamentoServico $listarAgendamentoSerico,
         private CancelarAgendamentoServico $cancelarAgendamentoSerico,
-    )
-    {
-    }
+    ) {}
 
     public function index(Request $request)
     {
@@ -41,6 +39,7 @@ class AgendamentoControlador extends Controller
             $this->criarAgendamentoServico->executar(
                 $storeAgendamentoRequest->validated()
             );
+
             return response()->json(['mensagem' => 'Agendamento realizado com sucesso']);
         } catch (Exception $exception) {
             throw $exception;
@@ -51,6 +50,7 @@ class AgendamentoControlador extends Controller
     {
         try {
             $this->cancelarAgendamentoSerico->executar($id);
+
             return response()->json(['mensagem' => 'Agendamento cancelado com sucesso']);
         } catch (Exception $exception) {
             throw $exception;

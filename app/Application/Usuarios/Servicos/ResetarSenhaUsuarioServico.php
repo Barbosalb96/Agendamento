@@ -19,9 +19,9 @@ class ResetarSenhaUsuarioServico
     public function solicitarResetSenha(string $email): void
     {
         $usuario = $this->repositorio->buscarPorEmail($email);
-//        if (! $usuario) {
-//            throw new UsuarioNaoEncontradoException('Usuário não encontrado');
-//        }
+        //        if (! $usuario) {
+        //            throw new UsuarioNaoEncontradoException('Usuário não encontrado');
+        //        }
         $token = Str::random(60);
         DB::table('password_resets')->updateOrInsert(
             ['email' => $email],

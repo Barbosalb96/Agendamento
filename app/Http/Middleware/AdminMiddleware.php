@@ -17,7 +17,7 @@ class AdminMiddleware
     {
         $user = auth()->user();
 
-        if ($user->isAdmin()){
+        if ($user->isAdmin()) {
             return $next($request);
         }
         throw new \Exception('Voce não tem permissao para acessar essa rota');
