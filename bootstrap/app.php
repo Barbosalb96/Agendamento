@@ -41,14 +41,12 @@ return Application::configure(basePath: dirname(__DIR__))
             ], 401);
         });
 
-        // 403 - Sem permissão
         $exceptions->renderable(function (AuthorizationException $e, $request) {
             return response()->json([
                 'message' => 'Você não tem permissão para acessar este recurso.',
             ], 403);
         });
 
-        // 422 - Erros de validação
         $exceptions->renderable(function (ValidationException $e, $request) {
             return response()->json([
                 'message' => 'Os dados fornecidos são inválidos.',
@@ -56,15 +54,13 @@ return Application::configure(basePath: dirname(__DIR__))
             ], 422);
         });
 
-        // 500 - Erro interno genérico
         $exceptions->renderable(function (Throwable $e, $request) {
             if ($e instanceof HttpException) {
-                return null; // já tratado por outro renderable
+                return null;
             }
 
             return response()->json([
                 'message' => 'Ocorreu um erro inesperado no servidor. Tente novamente mais tarde.',
-                // 'debug' => $e->getMessage(), // habilite apenas em DEV
             ], 500);
         });
     })->create();
