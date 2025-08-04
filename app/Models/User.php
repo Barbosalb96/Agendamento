@@ -49,5 +49,10 @@ class User extends Authenticatable
     {
         return $this->hasMany(Agendamento::class);
     }
+
+    public function isAdmin(): bool
+    {
+        return auth()->user()->perfil == 'admin';
+    }
 }
 

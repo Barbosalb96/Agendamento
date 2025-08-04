@@ -16,6 +16,7 @@ class AgendamentosResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
+            'uuid' => $this->uuid,
             'data' => Carbon::parse($this->data)->format('d/m/Y'),
             'horario' => Carbon::parse($this->horario)->format('H:i'),
             'grupo' => $this->grupo,

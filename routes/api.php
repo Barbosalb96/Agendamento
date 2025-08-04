@@ -12,6 +12,9 @@ Route::get('/user', function (Request $request) {
 Route::prefix('agendamento')->middleware('auth:sanctum')->group(function () {
     Route::get('/', [AgendamentoControlador::class, 'index']);
     Route::post('/', [AgendamentoControlador::class, 'agendar']);
+//    Route::get('/{id}', [AgendamentoControlador::class, 'show']);
+//    Route::put('/{id}', [AgendamentoControlador::class, 'update']);
+    Route::delete('/{id}', [AgendamentoControlador::class, 'destroy']);
 });
 
 Route::post('/login', [UsuarioControlador::class, 'login']);
@@ -20,3 +23,4 @@ Route::post('/password/request-reset', [UsuarioControlador::class, 'requestReset
 
 Route::get('validar-qrcode/{uuid}', [UsuarioControlador::class, 'validarQRCode'])
     ->name('validar-qrcode');
+

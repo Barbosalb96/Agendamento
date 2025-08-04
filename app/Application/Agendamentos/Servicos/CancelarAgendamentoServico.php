@@ -2,7 +2,10 @@
 
 namespace App\Application\Agendamentos\Servicos;
 
-use App\Dominio\Agendamentos\Repositorios\ContratoAgendamentoRepositorio;
+
+use App\Domains\Agendamento\Repositories\ContratoAgendamentoRepositorio;
+use App\Mail\CancelarAgendamentoMail;
+use Illuminate\Support\Facades\Mail;
 
 class CancelarAgendamentoServico
 {
@@ -10,8 +13,12 @@ class CancelarAgendamentoServico
         protected ContratoAgendamentoRepositorio $repositorio
     ) {}
 
-    public function cancelar(string $id): void
+    public function executar(string $id): void
     {
-        $this->repositorio->cancelar($id);
+      $agendamento =  $this->repositorio->cancelar($id);
+
+      Mail::to($agendamento->user->email)->send(
+          new CancelarAgendamentoMail($agendamento)
+      );
     }
 }

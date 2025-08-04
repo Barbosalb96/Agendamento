@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Application\Agendamentos\Servicos\CancelarAgendamentoServico;
 use App\Application\Agendamentos\Servicos\CriarAgendamentoServico;
 use App\Application\Agendamentos\Servicos\ListarAgendamentoServico;
 use App\Http\Requests\StoreAgendamentoRequest;
 use App\Http\Resources\AgendamentosResource;
-use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -14,8 +14,9 @@ use Illuminate\Http\Request;
 class AgendamentoControlador extends Controller
 {
     public function __construct(
-        private CriarAgendamentoServico  $criarAgendamentoServico,
-        private ListarAgendamentoServico $listarAgendamentoSerico
+        private CriarAgendamentoServico    $criarAgendamentoServico,
+        private ListarAgendamentoServico   $listarAgendamentoSerico,
+        private CancelarAgendamentoServico $cancelarAgendamentoSerico,
     )
     {
     }
@@ -44,6 +45,15 @@ class AgendamentoControlador extends Controller
         } catch (Exception $exception) {
             throw $exception;
         }
+    }
 
+    public function destroy(string $id)
+    {
+        try {
+            $this->cancelarAgendamentoSerico->executar($id);
+            return response()->json(['mensagem' => 'Agendamento cancelado com sucesso']);
+        } catch (Exception $exception) {
+            throw $exception;
+        }
     }
 }
