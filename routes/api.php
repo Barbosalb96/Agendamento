@@ -12,7 +12,7 @@ Route::get('/user', function (Request $request) {
 Route::prefix('agendamento')->middleware('auth:sanctum')->group(function () {
     Route::get('/', [AgendamentoControlador::class, 'index']);
     Route::post('/', [AgendamentoControlador::class, 'agendar']);
-    //    Route::get('/{id}', [AgendamentoControlador::class, 'show']);
+        Route::get('/{id}', [AgendamentoControlador::class, 'show']);
     //    Route::put('/{id}', [AgendamentoControlador::class, 'update']);
     Route::delete('/{id}', [AgendamentoControlador::class, 'destroy']);
 });

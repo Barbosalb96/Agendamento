@@ -20,11 +20,13 @@ class EloquentAgendamentoRepositorio implements ContratoAgendamentoRepositorio
             ->exists();
     }
 
-    public function cancelar(string $id): Agendamento
+    public function cancelar(string $id, array $data): Agendamento
     {
         $agendamento = Agendamento::with('user')
             ->where('uuid', $id)
             ->firstOrFail();
+        $agendamento->observacao = $data['observacao'] ?? null;
+        $agendamento->save();
         $agendamento->delete();
 
         return $agendamento;
@@ -33,7 +35,7 @@ class EloquentAgendamentoRepositorio implements ContratoAgendamentoRepositorio
     public function buscar(array $filter)
     {
         return Agendamento::query()
-            ->when(! empty($filter['data']), function ($query) use ($filter) {
+            ->when(!empty($filter['data']), function ($query) use ($filter) {
                 $query->whereDate('data', $filter['data']);
             })
             ->paginate(perPage: $filter['per_page'] ?? 10, page: $filter['page'] ?? 1);

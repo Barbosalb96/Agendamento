@@ -12,9 +12,9 @@ class CancelarAgendamentoServico
         protected ContratoAgendamentoRepositorio $repositorio
     ) {}
 
-    public function executar(string $id): void
+    public function executar(string $id,array $data): void
     {
-        $agendamento = $this->repositorio->cancelar($id);
+        $agendamento = $this->repositorio->cancelar($id,$data);
 
         Mail::to($agendamento->user->email)->send(
             new CancelarAgendamentoMail($agendamento)

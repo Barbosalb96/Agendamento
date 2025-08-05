@@ -19,10 +19,13 @@ class ResetarSenhaUsuarioServico
     public function solicitarResetSenha(string $email): void
     {
         $usuario = $this->repositorio->buscarPorEmail($email);
-        //        if (! $usuario) {
-        //            throw new UsuarioNaoEncontradoException('Usuário não encontrado');
-        //        }
+
+        if (! $usuario) {
+            throw new UsuarioNaoEncontradoException('Usuário não encontrado');
+        }
+
         $token = Str::random(60);
+
         DB::table('password_resets')->updateOrInsert(
             ['email' => $email],
             [
@@ -30,6 +33,7 @@ class ResetarSenhaUsuarioServico
                 'created_at' => now(),
             ]
         );
+
         Mail::to($email)->send(new ResetSenhaMail($email, $token));
     }
 
@@ -48,10 +52,13 @@ class ResetarSenhaUsuarioServico
         if (! $this->validarToken($email, $token)) {
             throw new \Exception('Token inválido ou expirado');
         }
+
         $usuario = $this->repositorio->buscarPorEmail($email);
+
         if (! $usuario) {
             throw new UsuarioNaoEncontradoException('Usuário não encontrado');
         }
+
         $usuario->senha = Hash::make($novaSenha);
         $this->repositorio->salvar($usuario);
         DB::table('password_resets')->where('email', $email)->delete();

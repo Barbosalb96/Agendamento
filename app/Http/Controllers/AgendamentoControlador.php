@@ -46,10 +46,11 @@ class AgendamentoControlador extends Controller
         }
     }
 
-    public function destroy(string $id)
+    public function destroy(string $id,Request $request)
     {
         try {
-            $this->cancelarAgendamentoSerico->executar($id);
+            $data =  $request->all();
+            $this->cancelarAgendamentoSerico->executar($id,$data);
 
             return response()->json(['mensagem' => 'Agendamento cancelado com sucesso']);
         } catch (Exception $exception) {

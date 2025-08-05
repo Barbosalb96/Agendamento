@@ -11,6 +11,7 @@ use App\Http\Requests\ResetSenhaRequest;
 use App\Infrastructure\Persistence\Eloquent\Repositories\EloquentUsuarioRepositorio;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Http\JsonResponse;
 
 class UsuarioControlador extends Controller
 {
@@ -53,7 +54,7 @@ class UsuarioControlador extends Controller
         return response()->json(['mensagem' => 'Token enviado para o e-mail se existir um usuário com esse e-mail.']);
     }
 
-    public function validarQRCode(string $uuid)
+    public function validarQRCode(string $uuid): JsonResponse
     {
 
         $agendamento = Agendamento::where('uuid', $uuid)->first();
@@ -61,6 +62,7 @@ class UsuarioControlador extends Controller
         if (! $agendamento) {
             return response()->json(['mensagem' => 'QR Code inválido ou agendamento não encontrado']);
         }
+
         $invalid = $agendamento->data >= Carbon::now() && $agendamento->horario > Carbon::now()->format('H:i');
 
         if (! $invalid) {

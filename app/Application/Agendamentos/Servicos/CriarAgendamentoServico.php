@@ -18,9 +18,9 @@ class CriarAgendamentoServico
         try {
             DB::beginTransaction();
             $agendamento = $this->repositorio->salvar($agendamento);
-            //            Mail::to($agendamento->user->email)->send(
-            //                new AgendamentoMail($agendamento)
-            //            );
+            Mail::to($agendamento->user->email)->send(
+                new AgendamentoMail($agendamento)
+            );
             DB::commit();
         } catch (\Exception $exception) {
             DB::rollBack();
