@@ -9,16 +9,11 @@ use Illuminate\Support\Carbon;
 
 class StoreAgendamentoRequest extends FormRequest
 {
-    public function authorize(): bool
-    {
-        return true;
-    }
-
     public function rules(): array
     {
         return [
             'uuid' => ['nullable', 'uuid'],
-            'user_id' => ['required', 'exists:users,id'],
+            'user_id' => ['required', 'integer', 'exists:users,id'],
             'data' => ['required', 'date'],
             'horario' => [
                 'required',

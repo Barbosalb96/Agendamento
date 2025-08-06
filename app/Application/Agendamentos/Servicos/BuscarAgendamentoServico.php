@@ -8,9 +8,7 @@ class BuscarAgendamentoServico
 {
     public function __construct(
         protected ContratoAgendamentoRepositorio $repositorio
-    )
-    {
-    }
+    ) {}
 
     public function executar(string $id)
     {

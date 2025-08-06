@@ -35,7 +35,7 @@ class EloquentAgendamentoRepositorio implements ContratoAgendamentoRepositorio
     public function buscar(array $filter)
     {
         return Agendamento::query()
-            ->when(!empty($filter['data']), function ($query) use ($filter) {
+            ->when(! empty($filter['data']), function ($query) use ($filter) {
                 $query->whereDate('data', $filter['data']);
             })
             ->paginate(perPage: $filter['per_page'] ?? 10, page: $filter['page'] ?? 1);
