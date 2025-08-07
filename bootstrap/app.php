@@ -54,13 +54,13 @@ return Application::configure(basePath: dirname(__DIR__))
             ], 422);
         });
 
-        $exceptions->renderable(function (Throwable $e, $request) {
-            if ($e instanceof HttpException) {
-                return null;
-            }
-
-            return response()->json([
-                'message' => 'Ocorreu um erro inesperado no servidor. Tente novamente mais tarde.',
-            ], 500);
-        });
+        //        $exceptions->renderable(function (Throwable $e, $request) {
+        //            if ($e instanceof HttpException) {
+        //                return null;
+        //            }
+        //
+        //            return response()->json([
+        //                'message' => 'Ocorreu um erro inesperado no servidor. Tente novamente mais tarde.',
+        //            ], 500);
+        //        });
     })->create();

@@ -3,8 +3,7 @@
 use App\Helpers\QrCodeGenerator;
 use Carbon\Carbon;
 
-$uri = (new QrCodeGenerator())->generate($agendamento->uuid);
-
+$uri = (new QrCodeGenerator())->generate($body['agendamento']->uuid);
 ?>
 
     <!DOCTYPE html>
@@ -30,17 +29,6 @@ $uri = (new QrCodeGenerator())->generate($agendamento->uuid);
             padding: 32px 24px;
         }
 
-        .header-logos {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 25px;
-        }
-
-        .logo {
-            height: 100px;
-            object-fit: contain;
-        }
 
         h1 {
             color: #d72638;
@@ -95,18 +83,14 @@ $uri = (new QrCodeGenerator())->generate($agendamento->uuid);
 </head>
 <body>
 <div class="container">
-    <div class="header-logos">
-        <img src="http://acervo.palaciodosleoes.ma.gov.br/wp-content/blogs.dir/110/files/2021/09/Ativo-1marca-1.png" alt="Palácio dos Leões" class="logo">
-        <img src="https://portal.sei.ma.gov.br/wp-content/uploads/2023/07/logo-1.png" alt="Governo do Maranhão" class="logo">
-    </div>
-
+    @include("emails.header")
     <h1>Confirmação de Agendamento</h1>
-    <p>Olá <strong>{{ $agendamento->user->name }}</strong>,</p>
+    <p>Olá <strong>{{ $body['agendamento']->user->name }}</strong>,</p>
     <p>Recebemos sua solicitação para agendamento de visita ao Palácio dos Leões.</p>
-    <p>Data: <strong>{{ Carbon::parse($agendamento->data)->format('d/m/Y') }}</strong></p>
-    <p>Horário: <strong>{{ Carbon::parse($agendamento->horario)->format('H:i') }}</strong></p>
+    <p>Data: <strong>{{ Carbon::parse($body['agendamento']->data)->format('d/m/Y') }}</strong></p>
+    <p>Horário: <strong>{{ Carbon::parse($body['agendamento']->horario)->format('H:i') }}</strong></p>
 
-    <img src="{{ $uri }}" alt="QR Code do agendamento" class="qr-code">
+    <img src="{{$uri }}" alt="QR Code do agendamento" class="qr-code">
 
     <h2>Orientações de Acesso</h2>
     <ul>

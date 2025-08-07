@@ -21,12 +21,6 @@
             padding: 32px 24px;
         }
 
-        .logo {
-            display: block;
-            margin: 0 auto 24px auto;
-            width: 180px;
-        }
-
         h1 {
             color: #d72638;
             font-size: 1.5rem;
@@ -68,13 +62,13 @@
     </style>
 </head>
 <body>
+
 <div class="container">
-    <img src="https://portal.sei.ma.gov.br/wp-content/uploads/2023/07/logo-1.png"
-         alt="Governo do Maranhão" class="logo">
+    @include("emails.header")
     <h1>Redefinição de Senha</h1>
     <p>Olá,<br>Recebemos uma solicitação para redefinir a senha do seu acesso.<br><br>Basta clicar no botão abaixo para
         criar uma nova senha:</p>
-    <a href="{{ $url }}" class="button">Redefinir Senha</a>
+    <a href="{{ $body["url"] }}" class="button">Redefinir Senha</a>
     <p style="font-size:0.95rem; color:#555; margin-top:16px;">Se você não solicitou a redefinição, ignore este
         e-mail.</p>
     <div class="footer">

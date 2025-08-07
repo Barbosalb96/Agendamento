@@ -4,10 +4,9 @@ namespace App\Application\Usuarios\Servicos;
 
 use App\Domains\Usuario\Exceptions\UsuarioNaoEncontradoException;
 use App\Domains\Usuario\Repositories\ContratoUsuarioRepositorio;
-use App\Mail\ResetSenhaMail;
+use App\Jobs\MailDispatchDefault;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 
 class ResetarSenhaUsuarioServico
@@ -34,7 +33,15 @@ class ResetarSenhaUsuarioServico
             ]
         );
 
-        Mail::to($email)->send(new ResetSenhaMail($email, $token));
+        dispatch(new MailDispatchDefault(
+            'Redefinição de Senha - Governo do Maranhão',
+            [
+                'url' => env('APP_URL_FRONT')."/resetar-senha?email={$email}&token={$token}",
+                'email' => $email,
+            ],
+            'reset_senha',
+            $email,
+        ));
     }
 
     public function validarToken(string $email, string $token): bool

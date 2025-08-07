@@ -3,8 +3,7 @@
 namespace App\Application\Agendamentos\Servicos;
 
 use App\Domains\Agendamento\Repositories\ContratoAgendamentoRepositorio;
-use App\Mail\CancelarAgendamentoMail;
-use Illuminate\Support\Facades\Mail;
+use App\Jobs\MailDispatchDefault;
 
 class CancelarAgendamentoServico
 {
@@ -16,8 +15,13 @@ class CancelarAgendamentoServico
     {
         $agendamento = $this->repositorio->cancelar($id, $data);
 
-        Mail::to($agendamento->user->email)->send(
-            new CancelarAgendamentoMail($agendamento)
-        );
+        dispatch(new MailDispatchDefault(
+            'Cancelamento de Agendamento - Governo do Maranhão',
+            [
+                'agendamento' => $this->agendamento,
+            ],
+            'cancelamento_agendamento',
+            $agendamento->user->email
+        ));
     }
 }

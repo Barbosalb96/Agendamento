@@ -51,15 +51,16 @@ return [
             'block_for' => 0,
             'after_commit' => false,
         ],
-
+        //        arn:aws:kms:eua-leste-2:207214251854:chave/e153af13-f1da-4774-8f54-46dd013977ae
+        //        207214251854
         'sqs' => [
             'driver' => 'sqs',
             'key' => env('AWS_ACCESS_KEY_ID'),
             'secret' => env('AWS_SECRET_ACCESS_KEY'),
-            'prefix' => env('SQS_PREFIX', 'https://sqs.us-east-1.amazonaws.com/your-account-id'),
-            'queue' => env('SQS_QUEUE', 'default'),
+            'prefix' => env('SQS_PREFIX', 'https://sqs.us-east-2.amazonaws.com/207214251854'),
+            'queue' => env('SQS_QUEUE', 'teste'),
             'suffix' => env('SQS_SUFFIX'),
-            'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
+            'region' => env('AWS_DEFAULT_REGION', 'us-east-2'),
             'after_commit' => false,
         ],
 
