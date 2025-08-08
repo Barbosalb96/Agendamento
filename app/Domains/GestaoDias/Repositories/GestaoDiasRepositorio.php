@@ -2,13 +2,15 @@
 
 namespace App\Domains\GestaoDias\Repositories;
 
-use App\Domains\Agendamento\Entities\Agendamento;
-
 interface GestaoDiasRepositorio
 {
-    public function listar(array $agendamento);
+    public function listar(array $filtro);
 
-    //    public function cancelar(string $id, array $data): Agendamento;
-    //
-    //    public function buscar(array $filter);
+    public function buscar(int $id);
+
+    public function create(array $data);
+
+    public function update(array $data, int $id): bool;
+
+    public function delete(int $id): bool;
 }
