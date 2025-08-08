@@ -2,7 +2,7 @@
 
 namespace App\Providers;
 
-use App\Domains\Agendamento\Repositories\ContratoAgendamentoRepositorio;
+use App\Domains\Agendamento\Repositories\GestaoDiasRepositorio;
 use App\Infrastructure\Persistence\Eloquent\Repositories\EloquentAgendamentoRepositorio;
 use Illuminate\Support\ServiceProvider;
 
@@ -13,7 +13,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->bind(ContratoAgendamentoRepositorio::class, EloquentAgendamentoRepositorio::class);
+        $this->app->bind(GestaoDiasRepositorio::class, EloquentAgendamentoRepositorio::class);
     }
 
     /**

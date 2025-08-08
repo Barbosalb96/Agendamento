@@ -6,6 +6,7 @@ use App\Domains\Agendamento\Entities\Agendamento;
 use App\Models\DiasFechados;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Carbon;
+use Illuminate\Validation\Validator;
 
 class StoreAgendamentoRequest extends FormRequest
 {
@@ -19,9 +20,20 @@ class StoreAgendamentoRequest extends FormRequest
                 'required',
                 'date_format:H:i',
                 function ($attribute, $value, $fail) {
-                    $time = \Carbon\Carbon::createFromFormat('H:i', $value);
+                    // Horas cheias
+                    $time = Carbon::createFromFormat('H:i', $value);
                     if ($time->minute !== 0) {
-                        $fail('Só é permitido agendar em horários cheios (ex: 08:00, 09:00, 10:00).');
+                        $fail('Só é permitido agendar em horários cheios (ex: 09:00, 10:00, 11:00).');
+
+                        return;
+                    }
+
+                    // Janela 09:00 às 17:00 (inclusive)
+                    $hour = (int) $time->format('H');
+                    if ($hour < 9 || $hour > 17) {
+                        $fail('Os horários disponíveis são apenas entre 09:00 e 17:00, em intervalos de 1 hora.');
+
+                        return;
                     }
                 },
             ],
@@ -33,34 +45,50 @@ class StoreAgendamentoRequest extends FormRequest
 
     public function withValidator($validator)
     {
-        $validator->after(function ($validator) {
+        /** @var Validator $validator */
+        $validator->after(function (Validator $validator) {
             $data = $this->input('data');
             $horario = $this->input('horario');
             $userId = $this->input('user_id');
-            $grupo = $this->input('grupo');
+            $grupo = $this->boolean('grupo');
             $quantidade = (int) $this->input('quantidade');
 
             if (! $data || ! $horario || ! $quantidade || ! $userId) {
                 return;
             }
 
-            if ($grupo == false && $quantidade > 1) {
-                $validator->errors()->add('data', 'somente grupos podem ter mais de uma pessoa na quantidade.');
+            if ($grupo === false && $quantidade > 1) {
+                $validator->errors()->add('quantidade', 'Somente grupos podem ter mais de uma pessoa na quantidade.');
+            }
+
+            if ($grupo === true && $quantidade < 10) {
+                $validator->errors()->add('quantidade', 'O grupo precisa ter entre 10 e 50 pessoas ( incluindo voce).');
             }
 
             $dataAgendada = Carbon::parse($data)->startOfDay();
+            $hoje = now()->startOfDay();
             $amanha = now()->addDay()->startOfDay();
 
+            if ($dataAgendada->lt($hoje)) {
+                $validator->errors()->add('data', 'Não é possível agendar em datas passadas.');
+
+                return;
+            }
+
             if ($dataAgendada->lt($amanha)) {
-                $validator->errors()->add('data', 'A data do agendamento deve ser a partir de amanhã.');
+                $validator->errors()->add('data', 'A data do agendamento deve ser a partir de amanhã (mínimo de 1 dia de antecedência).');
+            }
+
+            if ($dataAgendada->isMonday()) {
+                $validator->errors()->add('data', 'Não é possível agendar às segundas-feiras (bloqueio automático).');
             }
 
             $diaFechado = DiasFechados::whereDate('data', $dataAgendada)->exists();
             if ($diaFechado) {
-                $validator->errors()->add('data', 'Não é possível agendar nesta data, pois está marcada como fechada.');
+                $validator->errors()->add('data', 'Não é possível agendar nesta data: marcada como dia bloqueado.');
             }
 
-            $totalAgendado = Agendamento::whereDate('data', $data)
+            $totalAgendado = Agendamento::whereDate('data', $dataAgendada)
                 ->where('horario', $horario)
                 ->sum('quantidade');
 
@@ -68,16 +96,15 @@ class StoreAgendamentoRequest extends FormRequest
                 $disponiveis = max(0, 50 - $totalAgendado);
                 $validator->errors()->add(
                     'quantidade',
-                    "Já existem $totalAgendado pessoas agendadas para este horário. Restam apenas $disponiveis vagas."
+                    "Capacidade excedida: já existem {$totalAgendado} pessoas para {$horario}. Restam apenas {$disponiveis} vagas."
                 );
             }
 
-            // ❗ Verificar se o mesmo usuário já tem agendamento dentro de 1 hora no mesmo dia
             $horaAgendada = Carbon::createFromFormat('H:i', $horario);
             $inicioJanela = $horaAgendada->copy()->subMinutes(59)->format('H:i:s');
             $fimJanela = $horaAgendada->copy()->addMinutes(59)->format('H:i:s');
 
-            $jaTemOutro = Agendamento::whereDate('data', $data)
+            $jaTemOutro = Agendamento::whereDate('data', $dataAgendada)
                 ->where('user_id', $userId)
                 ->whereBetween('horario', [$inicioJanela, $fimJanela])
                 ->exists();
@@ -85,7 +112,7 @@ class StoreAgendamentoRequest extends FormRequest
             if ($jaTemOutro) {
                 $validator->errors()->add(
                     'horario',
-                    'Você já possui um agendamento em um horário muito próximo. O intervalo mínimo entre agendamentos é de 1 hora.'
+                    'Você já possui um agendamento próximo neste dia. O intervalo mínimo entre agendamentos é de 1 hora.'
                 );
             }
         });

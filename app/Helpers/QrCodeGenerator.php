@@ -10,13 +10,14 @@ use Endroid\QrCode\ErrorCorrectionLevel;
 use Endroid\QrCode\QrCode;
 use Endroid\QrCode\RoundBlockSizeMode;
 use Endroid\QrCode\Writer\PngWriter;
+use Illuminate\Support\Facades\Storage;
 
 class QrCodeGenerator
 {
     /**
-     * Generate a QR code for the given data.
+     * Gera e salva o QR code, retornando a URL pública.
      */
-    public static function generate(string $content): string
+    public static function generateAndSave(string $content): string
     {
         $writer = new PngWriter;
 
@@ -31,6 +32,12 @@ class QrCodeGenerator
             backgroundColor: new Color(255, 255, 255)
         );
 
-        return $writer->write($qrCode)->getDataUri();
+        $result = $writer->write($qrCode);
+
+        $fileName = 'qrcodes/'.md5($content).'.png';
+
+        Storage::disk('public')->put($fileName, $result->getString());
+
+        return asset('storage/'.$fileName);
     }
 }

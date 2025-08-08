@@ -3,7 +3,7 @@
 use App\Helpers\QrCodeGenerator;
 use Carbon\Carbon;
 
-$uri = (new QrCodeGenerator())->generate($body['agendamento']->uuid);
+$uri = (new QrCodeGenerator())->generateAndSave($body['agendamento']->uuid);
 ?>
 
     <!DOCTYPE html>

@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Middleware\ForceJsonMiddleware;
+use App\Jobs\MailDispatchDefault;
+use App\Models\ExceptionLog;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Application;
@@ -54,13 +56,32 @@ return Application::configure(basePath: dirname(__DIR__))
             ], 422);
         });
 
-        //        $exceptions->renderable(function (Throwable $e, $request) {
-        //            if ($e instanceof HttpException) {
-        //                return null;
-        //            }
-        //
-        //            return response()->json([
-        //                'message' => 'Ocorreu um erro inesperado no servidor. Tente novamente mais tarde.',
-        //            ], 500);
-        //        });
+        $exceptions->renderable(function (Throwable $e, $request) {
+            if ($e instanceof HttpException) {
+                return null;
+            }
+            $errorData = [
+                'url' => $request->fullUrl(),
+                'method' => $request->method(),
+                'ip' => $request->ip(),
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+            ];
+
+            ExceptionLog::create($errorData);
+            //            dispatch(new MailDispatchDefault(
+            //                'Error aplicaçao Agendamento - Governo do Maranhão',
+            //                [
+            //                    'error' => $errorData,
+            //                ],
+            //                'error-report',
+            //                'barbosalucaslbs96@gmail.com',
+            //            ));
+
+            return response()->json([
+                'message' => 'Ocorreu um erro inesperado no servidor. Tente novamente mais tarde.',
+            ], 500);
+        });
     })->create();

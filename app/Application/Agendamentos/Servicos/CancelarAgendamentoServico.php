@@ -2,13 +2,13 @@
 
 namespace App\Application\Agendamentos\Servicos;
 
-use App\Domains\Agendamento\Repositories\ContratoAgendamentoRepositorio;
+use App\Domains\Agendamento\Repositories\GestaoDiasRepositorio;
 use App\Jobs\MailDispatchDefault;
 
 class CancelarAgendamentoServico
 {
     public function __construct(
-        protected ContratoAgendamentoRepositorio $repositorio
+        protected GestaoDiasRepositorio $repositorio
     ) {}
 
     public function executar(string $id, array $data): void
