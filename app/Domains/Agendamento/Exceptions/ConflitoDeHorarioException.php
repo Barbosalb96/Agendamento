@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Dominio\Agendamentos\Exceptions;
+namespace App\Domains\Agendamento\Exceptions;
 
 use Exception;
 use Throwable;

@@ -4,6 +4,7 @@ namespace App\Domains\Agendamento\Entities;
 
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Database\Factories\AgendamentoFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -11,7 +12,12 @@ use Illuminate\Support\Str;
 
 class Agendamento extends Model
 {
-    use HasFactory,softDeletes;
+    use HasFactory, SoftDeletes;
+
+    protected static function newFactory()
+    {
+        return AgendamentoFactory::new();
+    }
 
     protected static function boot()
     {

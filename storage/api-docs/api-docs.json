@@ -1,0 +1,996 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Sistema de Agendamento API",
+        "description": "API para sistema de agendamento com gestão de dias e usuários",
+        "contact": {
+            "email": "admin@example.com"
+        },
+        "version": "1.0.0"
+    },
+    "paths": {
+        "/api/admin/agendamento": {
+            "get": {
+                "tags": [
+                    "Agendamentos"
+                ],
+                "summary": "Listar agendamentos",
+                "description": "Lista todos os agendamentos",
+                "operationId": "f8f55e62efaf559b69aaffe082c880d0",
+                "responses": {
+                    "200": {
+                        "description": "Lista de agendamentos",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "id": {
+                                                "type": "integer",
+                                                "example": 1
+                                            },
+                                            "data": {
+                                                "type": "string",
+                                                "format": "date",
+                                                "example": "2023-12-15"
+                                            },
+                                            "horario": {
+                                                "type": "string",
+                                                "example": "14:00:00"
+                                            },
+                                            "quantidade": {
+                                                "type": "integer",
+                                                "example": 2
+                                            },
+                                            "observacao": {
+                                                "type": "string",
+                                                "example": "Observação"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Agendamentos"
+                ],
+                "summary": "Criar agendamento",
+                "description": "Cria um novo agendamento",
+                "operationId": "4861258811e82db7f7c4e6615ec6cbc7",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "data",
+                                    "horario",
+                                    "quantidade"
+                                ],
+                                "properties": {
+                                    "data": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2023-12-15"
+                                    },
+                                    "horario": {
+                                        "type": "string",
+                                        "example": "14:00"
+                                    },
+                                    "quantidade": {
+                                        "type": "integer",
+                                        "example": 2
+                                    },
+                                    "observacao": {
+                                        "type": "string",
+                                        "example": "Observação do agendamento"
+                                    },
+                                    "grupo": {
+                                        "type": "boolean",
+                                        "example": false
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Agendamento criado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "mensagem": {
+                                            "type": "string",
+                                            "example": "Agendamento realizado com sucesso"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Erro de validação",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Dados inválidos"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/agendamento/{id}": {
+            "delete": {
+                "tags": [
+                    "Agendamentos"
+                ],
+                "summary": "Cancelar agendamento",
+                "description": "Cancela um agendamento existente",
+                "operationId": "b8e8969cc3ca4223a778b01e5c708547",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "1"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Agendamento cancelado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "mensagem": {
+                                            "type": "string",
+                                            "example": "Agendamento cancelado com sucesso"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/agendamento/vagas-por-horario": {
+            "get": {
+                "tags": [
+                    "Agendamentos"
+                ],
+                "summary": "Consultar vagas por horário",
+                "description": "Consulta a disponibilidade de vagas em uma data específica",
+                "operationId": "6fcf6c0012911d6b89c23b7882df1dd1",
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "date",
+                            "example": "2023-12-15"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Disponibilidade de vagas",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "string",
+                                            "example": "2023-12-15"
+                                        },
+                                        "bloqueado": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "motivo": {
+                                            "type": "string",
+                                            "example": ""
+                                        },
+                                        "horarios": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "hora": {
+                                                        "type": "string",
+                                                        "example": "09:00"
+                                                    },
+                                                    "vagas": {
+                                                        "type": "integer",
+                                                        "example": 48
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/gestao-dias": {
+            "get": {
+                "tags": [
+                    "Gestão de Dias"
+                ],
+                "summary": "Listar dias bloqueados",
+                "description": "Lista todos os dias com bloqueios ou restrições",
+                "operationId": "a438b513ea271e1e636e22354ec3dc92",
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "format": "date",
+                            "example": "2023-12-15"
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "example": 15
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lista paginada de dias",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "data": {
+                                                        "type": "string",
+                                                        "format": "date",
+                                                        "example": "2023-12-15"
+                                                    },
+                                                    "tipo": {
+                                                        "type": "string",
+                                                        "example": "bloqueio_total"
+                                                    },
+                                                    "observacao": {
+                                                        "type": "string",
+                                                        "example": "Feriado nacional"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/gestao-dias/{id}": {
+            "get": {
+                "tags": [
+                    "Gestão de Dias"
+                ],
+                "summary": "Buscar dia por ID",
+                "description": "Busca um dia específico por ID",
+                "operationId": "86a0b39b8d25a49fa46a6043649a59bf",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Dados do dia",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "data": {
+                                            "type": "string",
+                                            "format": "date",
+                                            "example": "2023-12-15"
+                                        },
+                                        "horario_inicio": {
+                                            "type": "string",
+                                            "example": "08:00"
+                                        },
+                                        "horario_fim": {
+                                            "type": "string",
+                                            "example": "18:00"
+                                        },
+                                        "tipo": {
+                                            "type": "string",
+                                            "example": "bloqueio_total"
+                                        },
+                                        "observacao": {
+                                            "type": "string",
+                                            "example": "Feriado nacional"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Dia não encontrado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Dia não encontrado"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Gestão de Dias"
+                ],
+                "summary": "Atualizar dia",
+                "description": "Atualiza um registro de dia existente",
+                "operationId": "a5bc36500a1b349c08315c97b3a00591",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": false,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "data": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2023-12-15"
+                                    },
+                                    "horario_inicio": {
+                                        "type": "string",
+                                        "example": "08:00"
+                                    },
+                                    "horario_fim": {
+                                        "type": "string",
+                                        "example": "18:00"
+                                    },
+                                    "tipo": {
+                                        "type": "string",
+                                        "enum": [
+                                            "bloqueio_total",
+                                            "bloqueio_parcial",
+                                            "manutencao",
+                                            "feriado"
+                                        ],
+                                        "example": "bloqueio_total"
+                                    },
+                                    "observacao": {
+                                        "type": "string",
+                                        "example": "Feriado nacional"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Dia atualizado com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Dia atualizado com sucesso"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Dia não encontrado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Dia não encontrado"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Gestão de Dias"
+                ],
+                "summary": "Excluir dia",
+                "description": "Exclui um registro de dia",
+                "operationId": "3a15a2b940be93d50bd5a56feb22ee0a",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Dia excluído com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Dia excluído com sucesso"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Dia não encontrado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Dia não encontrado"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/gestao-dias/store": {
+            "post": {
+                "tags": [
+                    "Gestão de Dias"
+                ],
+                "summary": "Criar novo dia bloqueado",
+                "description": "Cria um novo registro de dia com bloqueio ou restrição",
+                "operationId": "04ab9738f22ef8d4d489a0ba761be56c",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "data",
+                                    "horario_inicio",
+                                    "horario_fim",
+                                    "tipo"
+                                ],
+                                "properties": {
+                                    "data": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2023-12-15"
+                                    },
+                                    "horario_inicio": {
+                                        "type": "string",
+                                        "example": "08:00"
+                                    },
+                                    "horario_fim": {
+                                        "type": "string",
+                                        "example": "18:00"
+                                    },
+                                    "tipo": {
+                                        "type": "string",
+                                        "enum": [
+                                            "bloqueio_total",
+                                            "bloqueio_parcial",
+                                            "manutencao",
+                                            "feriado"
+                                        ],
+                                        "example": "bloqueio_total"
+                                    },
+                                    "observacao": {
+                                        "type": "string",
+                                        "example": "Feriado nacional"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Dia criado com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "data": {
+                                            "type": "string",
+                                            "format": "date",
+                                            "example": "2023-12-15"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Erro de validação",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Dados inválidos"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/login": {
+            "post": {
+                "tags": [
+                    "Autenticação"
+                ],
+                "summary": "Login do usuário",
+                "description": "Autentica um usuário e retorna um token de acesso",
+                "operationId": "42f73b33a1e0a43645f398cf4816eb60",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "user@example.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": "password123"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Login realizado com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "token": {
+                                            "type": "string",
+                                            "example": "1|abc123..."
+                                        },
+                                        "user": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "nome": {
+                                                    "type": "string",
+                                                    "example": "João Silva"
+                                                },
+                                                "email": {
+                                                    "type": "string",
+                                                    "example": "user@example.com"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Credenciais inválidas",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "mensagem": {
+                                            "type": "string",
+                                            "example": "Usuário ou senha inválidos"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/password/reset": {
+            "post": {
+                "tags": [
+                    "Autenticação"
+                ],
+                "summary": "Redefinir senha",
+                "description": "Redefine a senha do usuário usando token de reset",
+                "operationId": "fd7ba52856eb1daa766b470920f1ccdf",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "token",
+                                    "nova_senha"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "user@example.com"
+                                    },
+                                    "token": {
+                                        "type": "string",
+                                        "example": "abc123..."
+                                    },
+                                    "nova_senha": {
+                                        "type": "string",
+                                        "example": "newpassword123"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Senha redefinida com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "mensagem": {
+                                            "type": "string",
+                                            "example": "Senha redefinida com sucesso"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Erro na redefinição",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "mensagem": {
+                                            "type": "string",
+                                            "example": "Token inválido"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/password/request-reset": {
+            "post": {
+                "tags": [
+                    "Autenticação"
+                ],
+                "summary": "Solicitar reset de senha",
+                "description": "Solicita um token para reset de senha por email",
+                "operationId": "1d61d671c874272f26a06bf4ce728176",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "user@example.com"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Token enviado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "mensagem": {
+                                            "type": "string",
+                                            "example": "Token enviado para o e-mail se existir um usuário com esse e-mail."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/validar-qrcode/{uuid}": {
+            "get": {
+                "tags": [
+                    "QR Code"
+                ],
+                "summary": "Validar QR Code",
+                "description": "Valida um QR Code de agendamento",
+                "operationId": "ec59a5401563eef45a72398f00a95390",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "abc123-def456-ghi789"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "QR Code válido",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "mensagem": {
+                                            "type": "string",
+                                            "example": "QR Code válido"
+                                        },
+                                        "agendamento": {
+                                            "properties": {
+                                                "data": {
+                                                    "type": "string",
+                                                    "example": "15/12/2023"
+                                                },
+                                                "horario": {
+                                                    "type": "string",
+                                                    "example": "14:00"
+                                                },
+                                                "grupo": {
+                                                    "type": "string",
+                                                    "example": "Sim"
+                                                },
+                                                "quantidade": {
+                                                    "type": "integer",
+                                                    "example": 2
+                                                },
+                                                "observacao": {
+                                                    "type": "string",
+                                                    "example": "Observação do agendamento"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "QR Code inválido",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "mensagem": {
+                                            "type": "string",
+                                            "example": "QR Code inválido ou agendamento não encontrado"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "sanctum": {
+                "type": "http",
+                "description": "Insira o token Bearer no formato: Bearer {token}",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Agendamentos",
+            "description": "Agendamentos"
+        },
+        {
+            "name": "Gestão de Dias",
+            "description": "Gestão de Dias"
+        },
+        {
+            "name": "Autenticação",
+            "description": "Autenticação"
+        },
+        {
+            "name": "QR Code",
+            "description": "QR Code"
+        }
+    ]
+}

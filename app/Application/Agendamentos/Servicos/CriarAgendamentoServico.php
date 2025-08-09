@@ -3,14 +3,14 @@
 namespace App\Application\Agendamentos\Servicos;
 
 use App\Domains\Agendamento\Entities\Agendamento;
-use App\Domains\Agendamento\Repositories\GestaoDiasRepositorio;
+use App\Domains\Agendamento\Repositories\ContratoAgendamentoRepositorio;
 use App\Notifications\Notifications;
 use Illuminate\Support\Facades\DB;
 
 class CriarAgendamentoServico
 {
     public function __construct(
-        protected GestaoDiasRepositorio $repositorio
+        protected ContratoAgendamentoRepositorio $repositorio
     ) {}
 
     public function executar(array $agendamento): void

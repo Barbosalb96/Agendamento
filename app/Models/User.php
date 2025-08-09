@@ -28,7 +28,11 @@ class User extends Authenticatable
         'id_public',
         'name',
         'email',
+        'cpf',
+        'rg',
+        'eelefone',
         'password',
+        'perfil',
     ];
 
     protected $hidden = [

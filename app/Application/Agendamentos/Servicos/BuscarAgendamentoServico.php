@@ -2,12 +2,12 @@
 
 namespace App\Application\Agendamentos\Servicos;
 
-use App\Domains\Agendamento\Repositories\GestaoDiasRepositorio;
+use App\Domains\Agendamento\Repositories\ContratoAgendamentoRepositorio;
 
 class BuscarAgendamentoServico
 {
     public function __construct(
-        protected GestaoDiasRepositorio $repositorio
+        protected ContratoAgendamentoRepositorio $repositorio
     ) {}
 
     public function executar(string $id)

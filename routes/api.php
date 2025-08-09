@@ -10,13 +10,6 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
-Route::prefix('agendamento')->middleware('auth:sanctum')->group(function () {
-    Route::get('/', [AgendamentoControlador::class, 'index']);
-    Route::post('/', [AgendamentoControlador::class, 'agendar']);
-    Route::get('/{id}', [AgendamentoControlador::class, 'show']);
-    Route::delete('/{id}', [AgendamentoControlador::class, 'destroy']);
-    Route::delete('/{id}', [AgendamentoControlador::class, 'vagasPorHorario']);
-});
 
 Route::prefix('admin')->middleware('auth:sanctum')->group(function () {
     Route::prefix('gestao-dias')->group(function () {
@@ -25,6 +18,14 @@ Route::prefix('admin')->middleware('auth:sanctum')->group(function () {
         Route::post('/store', [GestaoDiasController::class, 'store']);
         Route::put('/{id}', [GestaoDiasController::class, 'update']);
         Route::delete('/{id}', [GestaoDiasController::class, 'destroy']);
+    });
+
+    Route::prefix('agendamento')->middleware('auth:sanctum')->group(function () {
+        Route::get('/', [AgendamentoControlador::class, 'index']);
+        Route::post('/', [AgendamentoControlador::class, 'agendar']);
+        Route::get('/{id}', [AgendamentoControlador::class, 'show']);
+        Route::delete('/{id}', [AgendamentoControlador::class, 'destroy']);
+        Route::delete('/{id}', [AgendamentoControlador::class, 'vagasPorHorario']);
     });
 });
 
