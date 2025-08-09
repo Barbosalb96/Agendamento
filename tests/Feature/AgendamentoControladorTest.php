@@ -261,4 +261,53 @@ class AgendamentoControladorTest extends TestCase
         }
         $this->assertTrue($encontrouReducao || count($horarios) > 0, 'Sistema deve processar consulta de vagas');
     }
+
+    public function test_visualizar_agendamento_existente()
+    {
+        $user = $this->authenticatedUser();
+        
+        $agendamento = Agendamento::factory()->create([
+            'user_id' => $user->id,
+            'observacao' => 'Agendamento para visualizar'
+        ]);
+
+        $response = $this->getJson("/api/admin/agendamento/{$agendamento->uuid}");
+
+        $response->assertStatus(200)
+            ->assertJsonStructure([
+                'id',
+                'uuid', 
+                'data',
+                'horario',
+                'quantidade',
+                'user_id'
+            ])
+            ->assertJson([
+                'uuid' => $agendamento->uuid,
+                'user_id' => $user->id
+            ]);
+    }
+
+    public function test_visualizar_agendamento_inexistente()
+    {
+        $this->authenticatedUser();
+        
+        $uuidInexistente = '550e8400-e29b-41d4-a716-446655440000';
+
+        $response = $this->getJson("/api/admin/agendamento/{$uuidInexistente}");
+
+        $response->assertStatus(404)
+            ->assertJson([
+                'message' => 'Agendamento não encontrado'
+            ]);
+    }
+
+    public function test_visualizar_agendamento_sem_autenticacao()
+    {
+        $agendamento = Agendamento::factory()->create();
+
+        $response = $this->getJson("/api/admin/agendamento/{$agendamento->uuid}");
+
+        $response->assertStatus(401);
+    }
 }
