@@ -15,8 +15,88 @@
                     "Agendamentos"
                 ],
                 "summary": "Listar agendamentos",
-                "description": "Lista todos os agendamentos",
+                "description": "Lista todos os agendamentos com filtros e paginação",
                 "operationId": "f8f55e62efaf559b69aaffe082c880d0",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Número da página",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Itens por página",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "maximum": 100,
+                            "minimum": 1,
+                            "example": 15
+                        }
+                    },
+                    {
+                        "name": "data",
+                        "in": "query",
+                        "description": "Filtrar por data específica (Y-m-d, d-m-Y ou d/m/Y)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "2023-12-15"
+                        }
+                    },
+                    {
+                        "name": "data_inicio",
+                        "in": "query",
+                        "description": "Filtrar a partir desta data (Y-m-d, d-m-Y ou d/m/Y)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "2023-12-01"
+                        }
+                    },
+                    {
+                        "name": "data_fim",
+                        "in": "query",
+                        "description": "Filtrar até esta data (Y-m-d, d-m-Y ou d/m/Y)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "2023-12-31"
+                        }
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "description": "Filtrar por status do agendamento",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "ativo",
+                                "cancelado",
+                                "finalizado"
+                            ],
+                            "example": "ativo"
+                        }
+                    },
+                    {
+                        "name": "user_id",
+                        "in": "query",
+                        "description": "Filtrar por ID do usuário",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "Lista de agendamentos",
@@ -26,18 +106,21 @@
                                     "type": "array",
                                     "items": {
                                         "properties": {
-                                            "id": {
-                                                "type": "integer",
-                                                "example": 1
+                                            "uuid": {
+                                                "type": "string",
+                                                "example": "550e8400-e29b-41d4-a716-446655440000"
                                             },
                                             "data": {
                                                 "type": "string",
-                                                "format": "date",
-                                                "example": "2023-12-15"
+                                                "example": "15/12/2023"
                                             },
                                             "horario": {
                                                 "type": "string",
-                                                "example": "14:00:00"
+                                                "example": "14:00"
+                                            },
+                                            "grupo": {
+                                                "type": "boolean",
+                                                "example": false
                                             },
                                             "quantidade": {
                                                 "type": "integer",
@@ -45,7 +128,7 @@
                                             },
                                             "observacao": {
                                                 "type": "string",
-                                                "example": "Observação"
+                                                "example": "Observação do agendamento"
                                             }
                                         },
                                         "type": "object"
@@ -132,6 +215,86 @@
                                         "message": {
                                             "type": "string",
                                             "example": "Dados inválidos"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/agendamento/{uuid}": {
+            "get": {
+                "tags": [
+                    "Agendamentos"
+                ],
+                "summary": "Visualizar agendamento",
+                "description": "Visualiza os dados de um agendamento específico pelo UUID",
+                "operationId": "9adb7e74ccec2d3ac4fbda0ab28a816b",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "550e8400-e29b-41d4-a716-446655440000"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Dados do agendamento",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "uuid": {
+                                            "type": "string",
+                                            "example": "550e8400-e29b-41d4-a716-446655440000"
+                                        },
+                                        "data": {
+                                            "type": "string",
+                                            "example": "15/12/2023"
+                                        },
+                                        "horario": {
+                                            "type": "string",
+                                            "example": "14:00"
+                                        },
+                                        "grupo": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "quantidade": {
+                                            "type": "integer",
+                                            "example": 2
+                                        },
+                                        "observacao": {
+                                            "type": "string",
+                                            "example": "Observação do agendamento"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Agendamento não encontrado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Agendamento não encontrado"
                                         }
                                     },
                                     "type": "object"

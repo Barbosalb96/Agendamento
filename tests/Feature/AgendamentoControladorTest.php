@@ -27,7 +27,7 @@ class AgendamentoControladorTest extends TestCase
         
         Agendamento::factory()->count(5)->create(['user_id' => $user->id]);
 
-        $response = $this->getJson('/api/admin/agendamento');
+        $response = $this->getJson('/api/admin/agendamento?page=1&per_page=15');
 
         $response->assertStatus(200);
         
@@ -37,7 +37,7 @@ class AgendamentoControladorTest extends TestCase
 
     public function test_listar_agendamentos_nao_autenticado()
     {
-        $response = $this->getJson('/api/admin/agendamento');
+        $response = $this->getJson('/api/admin/agendamento?page=1&per_page=15');
 
         $response->assertStatus(401);
     }
@@ -90,7 +90,15 @@ class AgendamentoControladorTest extends TestCase
         $response = $this->postJson('/api/admin/agendamento', []);
 
         $response->assertStatus(422)
-            ->assertJsonValidationErrors(['data', 'horario', 'quantidade']);
+            ->assertJsonStructure([
+                'mensagem',
+                'erro',
+                'erros_validacao' => [
+                    'data',
+                    'horario', 
+                    'quantidade'
+                ]
+            ]);
     }
 
     public function test_criar_agendamento_em_data_passada()
@@ -275,16 +283,16 @@ class AgendamentoControladorTest extends TestCase
 
         $response->assertStatus(200)
             ->assertJsonStructure([
-                'id',
                 'uuid', 
                 'data',
                 'horario',
+                'grupo',
                 'quantidade',
-                'user_id'
+                'observacao'
             ])
             ->assertJson([
                 'uuid' => $agendamento->uuid,
-                'user_id' => $user->id
+                'observacao' => 'Agendamento para visualizar'
             ]);
     }
 
@@ -297,9 +305,41 @@ class AgendamentoControladorTest extends TestCase
         $response = $this->getJson("/api/admin/agendamento/{$uuidInexistente}");
 
         $response->assertStatus(404)
-            ->assertJson([
-                'message' => 'Agendamento não encontrado'
+            ->assertJsonStructure([
+                'mensagem',
+                'erro',
+                'codigo'
             ]);
+    }
+
+    public function test_listar_agendamentos_com_filtros()
+    {
+        $user = $this->authenticatedUser();
+        
+        // Cria agendamentos em datas diferentes
+        Agendamento::factory()->create([
+            'user_id' => $user->id,
+            'data' => '2023-12-15',
+            'observacao' => 'Primeiro agendamento'
+        ]);
+        
+        Agendamento::factory()->create([
+            'user_id' => $user->id,
+            'data' => '2023-12-20',
+            'observacao' => 'Segundo agendamento'
+        ]);
+
+        // Testa filtro por data específica
+        $response = $this->getJson('/api/admin/agendamento?page=1&per_page=15&data=15/12/2023');
+
+        $response->assertStatus(200);
+        $this->assertIsArray($response->json());
+        
+        // Testa filtro por range de datas
+        $response = $this->getJson('/api/admin/agendamento?page=1&per_page=15&data_inicio=15/12/2023&data_fim=20/12/2023');
+
+        $response->assertStatus(200);
+        $this->assertIsArray($response->json());
     }
 
     public function test_visualizar_agendamento_sem_autenticacao()

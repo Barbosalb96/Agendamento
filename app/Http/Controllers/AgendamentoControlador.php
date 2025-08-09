@@ -6,6 +6,7 @@ use App\Application\Agendamentos\Services\CancelarAgendamentoServico;
 use App\Application\Agendamentos\Services\CriarAgendamentoServico;
 use App\Application\Agendamentos\Services\ListarAgendamentoServico;
 use App\Domains\Agendamento\Entities\Agendamento;
+use App\Http\Requests\FilterAgendamentoRequest;
 use App\Http\Requests\StoreAgendamentoRequest;
 use App\Http\Resources\AgendamentosResource;
 use App\Models\DiasFechados;
@@ -27,38 +28,83 @@ class AgendamentoControlador extends Controller
      *     path="/api/admin/agendamento",
      *     tags={"Agendamentos"},
      *     summary="Listar agendamentos",
-     *     description="Lista todos os agendamentos",
+     *     description="Lista todos os agendamentos com filtros e paginação",
      *     security={{"sanctum":{}}},
+     *     @OA\Parameter(
+     *         name="page",
+     *         in="query",
+     *         required=true,
+     *         @OA\Schema(type="integer", minimum=1, example=1),
+     *         description="Número da página"
+     *     ),
+     *     @OA\Parameter(
+     *         name="per_page",
+     *         in="query",
+     *         required=true,
+     *         @OA\Schema(type="integer", minimum=1, maximum=100, example=15),
+     *         description="Itens por página"
+     *     ),
+     *     @OA\Parameter(
+     *         name="data",
+     *         in="query",
+     *         required=false,
+     *         @OA\Schema(type="string", example="2023-12-15"),
+     *         description="Filtrar por data específica (Y-m-d, d-m-Y ou d/m/Y)"
+     *     ),
+     *     @OA\Parameter(
+     *         name="data_inicio",
+     *         in="query",
+     *         required=false,
+     *         @OA\Schema(type="string", example="2023-12-01"),
+     *         description="Filtrar a partir desta data (Y-m-d, d-m-Y ou d/m/Y)"
+     *     ),
+     *     @OA\Parameter(
+     *         name="data_fim",
+     *         in="query",
+     *         required=false,
+     *         @OA\Schema(type="string", example="2023-12-31"),
+     *         description="Filtrar até esta data (Y-m-d, d-m-Y ou d/m/Y)"
+     *     ),
+     *     @OA\Parameter(
+     *         name="status",
+     *         in="query",
+     *         required=false,
+     *         @OA\Schema(type="string", enum={"ativo", "cancelado", "finalizado"}, example="ativo"),
+     *         description="Filtrar por status do agendamento"
+     *     ),
+     *     @OA\Parameter(
+     *         name="user_id",
+     *         in="query",
+     *         required=false,
+     *         @OA\Schema(type="integer", example=1),
+     *         description="Filtrar por ID do usuário"
+     *     ),
      *     @OA\Response(
      *         response=200,
      *         description="Lista de agendamentos",
      *         @OA\JsonContent(
      *             type="array",
      *             @OA\Items(
-     *                 @OA\Property(property="id", type="integer", example=1),
-     *                 @OA\Property(property="data", type="string", format="date", example="2023-12-15"),
-     *                 @OA\Property(property="horario", type="string", example="14:00:00"),
+     *                 @OA\Property(property="uuid", type="string", example="550e8400-e29b-41d4-a716-446655440000"),
+     *                 @OA\Property(property="data", type="string", example="15/12/2023"),
+     *                 @OA\Property(property="horario", type="string", example="14:00"),
+     *                 @OA\Property(property="grupo", type="boolean", example=false),
      *                 @OA\Property(property="quantidade", type="integer", example=2),
-     *                 @OA\Property(property="observacao", type="string", example="Observação")
+     *                 @OA\Property(property="observacao", type="string", example="Observação do agendamento")
      *             )
      *         )
      *     )
      * )
      */
-    public function index(Request $request)
+    public function index(FilterAgendamentoRequest $filterAgendamentoRequest)
     {
         $response = $this->listarAgendamentoSerico->executar(
-            $request->all()
+            $filterAgendamentoRequest->validated()
         );
 
         return AgendamentosResource::collection($response);
     }
 
-    /**
-     * Exibe a lista de agendamentos do usuário autenticado.
-     *
-     * @return JsonResponse
-     */
     /**
      * @OA\Post(
      *     path="/api/admin/agendamento",
@@ -123,14 +169,12 @@ class AgendamentoControlador extends Controller
      *         response=200,
      *         description="Dados do agendamento",
      *         @OA\JsonContent(
-     *             @OA\Property(property="id", type="integer", example=1),
      *             @OA\Property(property="uuid", type="string", example="550e8400-e29b-41d4-a716-446655440000"),
-     *             @OA\Property(property="data", type="string", format="date", example="2023-12-15"),
-     *             @OA\Property(property="horario", type="string", example="14:00:00"),
-     *             @OA\Property(property="quantidade", type="integer", example=2),
-     *             @OA\Property(property="observacao", type="string", example="Observação do agendamento"),
+     *             @OA\Property(property="data", type="string", example="15/12/2023"),
+     *             @OA\Property(property="horario", type="string", example="14:00"),
      *             @OA\Property(property="grupo", type="boolean", example=false),
-     *             @OA\Property(property="user_id", type="integer", example=1)
+     *             @OA\Property(property="quantidade", type="integer", example=2),
+     *             @OA\Property(property="observacao", type="string", example="Observação do agendamento")
      *         )
      *     ),
      *     @OA\Response(
@@ -148,12 +192,20 @@ class AgendamentoControlador extends Controller
             $agendamento = Agendamento::where('uuid', $uuid)->first();
 
             if (!$agendamento) {
-                return response()->json(['message' => 'Agendamento não encontrado'], 404);
+                return response()->json([
+                    'mensagem' => 'Agendamento não encontrado.',
+                    'erro' => 'O agendamento com este UUID não existe no sistema.',
+                    'codigo' => 404
+                ], 404);
             }
 
             return new AgendamentosResource($agendamento);
         } catch (Exception $exception) {
-            return response()->json(['message' => 'Erro interno do servidor'], 500);
+            return response()->json([
+                'mensagem' => 'Erro interno do servidor.',
+                'erro' => 'Ocorreu um erro inesperado ao buscar o agendamento.',
+                'codigo' => 500
+            ], 500);
         }
     }
 
@@ -226,7 +278,6 @@ class AgendamentoControlador extends Controller
     {
         $data = Carbon::parse($request->query('data'))->startOfDay();
 
-        // Bloqueios rápidos (segunda/dia fechado)
         if ($data->isMonday() || DiasFechados::whereDate('data', $data)->exists()) {
             return response()->json([
                 'data' => $data->toDateString(),

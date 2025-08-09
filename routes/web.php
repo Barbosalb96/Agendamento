@@ -3,12 +3,13 @@
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    dispatch(new \App\Jobs\MailDispatchDefault(
-        'teste sqs',
-        [1, 2, 3],
-        'sqs',
-        'barbosalucaslbs96@gmail.com'
-    ));
+    // Log do acesso para monitoramento de segurança
+    \Log::info('Acesso à página inicial do sistema governamental', [
+        'ip' => request()->ip(),
+        'user_agent' => request()->userAgent(),
+        'timestamp' => now(),
+        'url' => request()->fullUrl()
+    ]);
 
-    return 'ok';
+    return view('governo');
 });

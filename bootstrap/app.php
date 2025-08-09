@@ -27,32 +27,42 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->renderable(function (Illuminate\Database\Eloquent\ModelNotFoundException $e, $request) {
             return response()->json([
-                'message' => 'Registro não encontrado.',
+                'mensagem' => 'Registro não encontrado.',
+                'erro' => 'O recurso solicitado não existe no sistema.',
+                'codigo' => 404
             ], 404);
         });
 
         $exceptions->renderable(function (NotFoundHttpException $e, $request) {
             return response()->json([
-                'message' => 'Endpoint ou página não encontrada.',
+                'mensagem' => 'Página ou endpoint não encontrado.',
+                'erro' => 'A URL solicitada não existe neste servidor.',
+                'codigo' => 404
             ], 404);
         });
 
         $exceptions->renderable(function (AuthenticationException $e, $request) {
             return response()->json([
-                'message' => 'Você precisa estar autenticado para acessar este recurso.',
+                'mensagem' => 'Acesso não autorizado.',
+                'erro' => 'Você precisa estar autenticado para acessar este recurso.',
+                'codigo' => 401
             ], 401);
         });
 
         $exceptions->renderable(function (AuthorizationException $e, $request) {
             return response()->json([
-                'message' => 'Você não tem permissão para acessar este recurso.',
+                'mensagem' => 'Acesso negado.',
+                'erro' => 'Você não possui permissão para realizar esta ação.',
+                'codigo' => 403
             ], 403);
         });
 
         $exceptions->renderable(function (ValidationException $e, $request) {
             return response()->json([
-                'message' => 'Os dados fornecidos são inválidos.',
-                'errors' => $e->errors(),
+                'mensagem' => 'Dados inválidos fornecidos.',
+                'erro' => 'Verifique os campos obrigatórios e tente novamente.',
+                'erros_validacao' => $e->errors(),
+                'codigo' => 422
             ], 422);
         });
 
@@ -71,17 +81,24 @@ return Application::configure(basePath: dirname(__DIR__))
             ];
 
             ExceptionLog::create($errorData);
-            //            dispatch(new MailDispatchDefault(
-            //                'Error aplicaçao Agendamento - Governo do Maranhão',
-            //                [
-            //                    'error' => $errorData,
-            //                ],
-            //                'error-report',
-            //                'barbosalucaslbs96@gmail.com',
-            //            ));
+            
+            // Enviar email de notificação de erro
+            dispatch(new MailDispatchDefault(
+                'Error aplicação Agendamento - Governo do Maranhão',
+                [
+                    'error' => $errorData,
+                    'timestamp' => now()->format('d/m/Y H:i:s'),
+                    'server' => request()->getHost(),
+                ],
+                'error-report',
+                'barbosalucaslbs96@gmail.com',
+            ));
 
             return response()->json([
-                'message' => 'Ocorreu um erro inesperado no servidor. Tente novamente mais tarde.',
+                'mensagem' => 'Erro interno do servidor.',
+                'erro' => 'Ocorreu um erro inesperado. Nossa equipe técnica foi notificada.',
+                'codigo' => 500,
+                'contato' => 'Se o problema persistir, entre em contato com o suporte técnico.'
             ], 500);
         });
     })->create();
