@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Application\GestaoDias\Servicos\AtualizarDia;
-use App\Application\GestaoDias\Servicos\BuscarDia;
-use App\Application\GestaoDias\Servicos\CriarDia;
-use App\Application\GestaoDias\Servicos\DeletarDia;
-use App\Application\GestaoDias\Servicos\ListasDias;
+use App\Application\GestaoDias\Services\AtualizarDia;
+use App\Application\GestaoDias\Services\BuscarDia;
+use App\Application\GestaoDias\Services\CriarDia;
+use App\Application\GestaoDias\Services\DeletarDia;
+use App\Application\GestaoDias\Services\ListasDias;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 

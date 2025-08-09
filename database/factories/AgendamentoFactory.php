@@ -16,9 +16,8 @@ class AgendamentoFactory extends Factory
         return [
             'user_id' => User::factory(),
             'data' => Carbon::today()->addDays(rand(1, 30)),
-            'horario' => sprintf('%02d:00:00', rand(9, 17)),
+            'horario' => sprintf('%02d:00', rand(9, 17)),
             'grupo' => fake()->boolean(30),
-            'status' => fake()->randomElement(['confirmado', 'cancelado', 'pendente']),
             'observacao' => fake()->optional()->sentence(),
             'quantidade' => rand(1, 5),
         ];
@@ -27,14 +26,14 @@ class AgendamentoFactory extends Factory
     public function confirmado(): static
     {
         return $this->state(fn (array $attributes) => [
-            'status' => 'confirmado',
+            'observacao' => 'Agendamento confirmado',
         ]);
     }
 
     public function cancelado(): static
     {
         return $this->state(fn (array $attributes) => [
-            'status' => 'cancelado',
+            'observacao' => 'Agendamento cancelado',
         ]);
     }
 

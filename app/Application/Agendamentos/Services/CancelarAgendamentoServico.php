@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Application\Agendamentos\Servicos;
+namespace App\Application\Agendamentos\Services;
 
 use App\Domains\Agendamento\Repositories\ContratoAgendamentoRepositorio;
 use App\Jobs\MailDispatchDefault;

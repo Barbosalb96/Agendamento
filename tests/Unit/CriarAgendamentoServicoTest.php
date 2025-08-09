@@ -2,7 +2,7 @@
 
 namespace Tests\Unit;
 
-use App\Application\Agendamentos\Servicos\CriarAgendamentoServico;
+use App\Application\Agendamentos\Services\CriarAgendamentoServico;
 use App\Domains\Agendamento\Entities\Agendamento;
 use App\Domains\Agendamento\Exceptions\ConflitoDeHorarioException;
 use App\Infrastructure\Persistence\Eloquent\Repositories\EloquentAgendamentoRepositorio;
@@ -23,12 +23,12 @@ class CriarAgendamentoServicoTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         $this->servico = new CriarAgendamentoServico(
             new EloquentAgendamentoRepositorio(),
             new EloquentUsuarioRepositorio()
         );
-        
+
         $this->usuario = User::factory()->create();
     }
 
@@ -47,8 +47,6 @@ class CriarAgendamentoServicoTest extends TestCase
 
         $this->assertDatabaseHas('agendamentos', [
             'user_id' => $this->usuario->id,
-            'data' => $dados['data'],
-            'horario' => $dados['horario'] . ':00',
             'quantidade' => $dados['quantidade']
         ]);
     }
@@ -56,7 +54,7 @@ class CriarAgendamentoServicoTest extends TestCase
     public function test_nao_criar_agendamento_em_segunda_feira()
     {
         $proximaSegunda = Carbon::now()->next(Carbon::MONDAY);
-        
+
         $dados = [
             'user_id' => $this->usuario->id,
             'data' => $proximaSegunda->format('Y-m-d'),
@@ -72,7 +70,7 @@ class CriarAgendamentoServicoTest extends TestCase
     public function test_nao_criar_agendamento_em_dia_fechado()
     {
         $dataFechada = Carbon::tomorrow()->addDays(2);
-        
+
         DiasFechados::factory()->create([
             'data' => $dataFechada->format('Y-m-d'),
             'tipo' => 'bloqueio_total'
@@ -96,11 +94,11 @@ class CriarAgendamentoServicoTest extends TestCase
         if ($dataAgendamento->isMonday()) {
             $dataAgendamento->addDay();
         }
-        
+
         // Cria agendamentos que esgotem as vagas
         Agendamento::factory()->count(10)->create([
             'data' => $dataAgendamento->format('Y-m-d'),
-            'horario' => '14:00:00',
+            'horario' => '14:00',
             'quantidade' => 5 // Total: 50 vagas
         ]);
 

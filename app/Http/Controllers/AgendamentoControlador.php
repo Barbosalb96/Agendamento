@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Application\Agendamentos\Servicos\CancelarAgendamentoServico;
-use App\Application\Agendamentos\Servicos\CriarAgendamentoServico;
-use App\Application\Agendamentos\Servicos\ListarAgendamentoServico;
+use App\Application\Agendamentos\Services\CancelarAgendamentoServico;
+use App\Application\Agendamentos\Services\CriarAgendamentoServico;
+use App\Application\Agendamentos\Services\ListarAgendamentoServico;
 use App\Domains\Agendamento\Entities\Agendamento;
 use App\Http\Requests\StoreAgendamentoRequest;
 use App\Http\Resources\AgendamentosResource;

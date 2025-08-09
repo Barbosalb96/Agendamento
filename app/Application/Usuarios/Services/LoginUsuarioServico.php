@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Application\Usuarios\Servicos;
+namespace App\Application\Usuarios\Services;
 
 use App\Domains\Usuario\Repositories\ContratoUsuarioRepositorio;
 

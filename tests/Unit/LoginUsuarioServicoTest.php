@@ -2,7 +2,7 @@
 
 namespace Tests\Unit;
 
-use App\Application\Usuarios\Servicos\LoginUsuarioServico;
+use App\Application\Usuarios\Services\LoginUsuarioServico;
 use App\Infrastructure\Persistence\Eloquent\Repositories\EloquentUsuarioRepositorio;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -18,7 +18,7 @@ class LoginUsuarioServicoTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         $this->servico = new LoginUsuarioServico(
             new EloquentUsuarioRepositorio()
         );
@@ -86,15 +86,19 @@ class LoginUsuarioServicoTest extends TestCase
         $this->servico->executar('joao@teste.com', 'senha123');
     }
 
-    public function test_login_case_insensitive_email()
+    public function test_login_retorna_dados_usuario()
     {
         $user = User::factory()->create([
-            'email' => 'JOAO@TESTE.COM',
+            'name' => 'Test User',
+            'email' => 'test@example.com',
             'password' => Hash::make('senha123')
         ]);
 
-        // Deve funcionar com email em case diferente
-        $resultado = $this->servico->executar('joao@teste.com', 'senha123');
+        $resultado = $this->servico->executar('test@example.com', 'senha123');
+        
         $this->assertNotNull($resultado);
+        $this->assertEquals($user->id, $resultado->id);
+        $this->assertEquals('Test User', $resultado->nome);
+        $this->assertEquals('test@example.com', $resultado->email);
     }
 }

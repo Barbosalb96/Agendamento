@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Application\GestaoDias\Servicos;
+namespace App\Application\GestaoDias\Services;
 
 use App\Domains\GestaoDias\Repositories\GestaoDiasRepositorio;
 
-class ListasDias
+class CriarDia
 {
     public function __construct(
         private GestaoDiasRepositorio $gestaoDias,
@@ -12,6 +12,6 @@ class ListasDias
 
     public function execute(array $data)
     {
-        return $this->gestaoDias->listar($data);
+        return $this->gestaoDias->create($data);
     }
 }

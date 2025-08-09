@@ -1,16 +1,17 @@
 <?php
 
-namespace App\Application\Agendamentos\Servicos;
+namespace App\Application\Agendamentos\Services;
 
 use App\Domains\Agendamento\Repositories\ContratoAgendamentoRepositorio;
-class ListarAgendamentoServico
+
+class BuscarAgendamentoServico
 {
     public function __construct(
         protected ContratoAgendamentoRepositorio $repositorio
     ) {}
 
-    public function executar(array $filter)
+    public function executar(string $id)
     {
-        return $this->repositorio->buscar($filter);
+        return $this->repositorio->buscar($id);
     }
 }

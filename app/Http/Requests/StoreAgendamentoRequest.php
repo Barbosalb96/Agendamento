@@ -20,7 +20,6 @@ class StoreAgendamentoRequest extends FormRequest
                 'required',
                 'date_format:H:i',
                 function ($attribute, $value, $fail) {
-                    // Horas cheias
                     $time = Carbon::createFromFormat('H:i', $value);
                     if ($time->minute !== 0) {
                         $fail('Só é permitido agendar em horários cheios (ex: 09:00, 10:00, 11:00).');
@@ -28,8 +27,7 @@ class StoreAgendamentoRequest extends FormRequest
                         return;
                     }
 
-                    // Janela 09:00 às 17:00 (inclusive)
-                    $hour = (int) $time->format('H');
+                    $hour = (int)$time->format('H');
                     if ($hour < 9 || $hour > 17) {
                         $fail('Os horários disponíveis são apenas entre 09:00 e 17:00, em intervalos de 1 hora.');
 
@@ -43,6 +41,17 @@ class StoreAgendamentoRequest extends FormRequest
         ];
     }
 
+    protected function prepareForValidation()
+    {
+        $user = auth()->user();
+        if (!$user->isAdmin()) {
+            $this->merge([
+                "user_id" => auth()->user()->id
+            ]);
+        }
+
+    }
+
     public function withValidator($validator)
     {
         /** @var Validator $validator */
@@ -51,9 +60,9 @@ class StoreAgendamentoRequest extends FormRequest
             $horario = $this->input('horario');
             $userId = $this->input('user_id');
             $grupo = $this->boolean('grupo');
-            $quantidade = (int) $this->input('quantidade');
+            $quantidade = (int)$this->input('quantidade');
 
-            if (! $data || ! $horario || ! $quantidade || ! $userId) {
+            if (!$data || !$horario || !$quantidade || !$userId) {
                 return;
             }
 

@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Application\Usuarios\Servicos\LoginUsuarioServico;
-use App\Application\Usuarios\Servicos\ResetarSenhaUsuarioServico;
+use App\Application\Usuarios\Services\LoginUsuarioServico;
+use App\Application\Usuarios\Services\ResetarSenhaUsuarioServico;
 use App\Domains\Agendamento\Entities\Agendamento;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RequestResetSenhaRequest;

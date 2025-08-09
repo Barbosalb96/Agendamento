@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Application\GestaoDias\Servicos;
+namespace App\Application\GestaoDias\Services;
 
 use App\Domains\GestaoDias\Repositories\GestaoDiasRepositorio;
 

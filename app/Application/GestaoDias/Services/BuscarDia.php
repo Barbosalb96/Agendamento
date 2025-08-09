@@ -1,17 +1,17 @@
 <?php
 
-namespace App\Application\GestaoDias\Servicos;
+namespace App\Application\GestaoDias\Services;
 
 use App\Domains\GestaoDias\Repositories\GestaoDiasRepositorio;
 
-class CriarDia
+class BuscarDia
 {
     public function __construct(
         private GestaoDiasRepositorio $gestaoDias,
     ) {}
 
-    public function execute(array $data)
+    public function execute(int $id)
     {
-        return $this->gestaoDias->create($data);
+        return $this->gestaoDias->buscar($id);
     }
 }
