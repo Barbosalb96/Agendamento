@@ -107,6 +107,57 @@ class AgendamentoControlador extends Controller
     }
 
     /**
+     * @OA\Get(
+     *     path="/api/admin/agendamento/{uuid}",
+     *     tags={"Agendamentos"},
+     *     summary="Visualizar agendamento",
+     *     description="Visualiza os dados de um agendamento específico pelo UUID",
+     *     security={{"sanctum":{}}},
+     *     @OA\Parameter(
+     *         name="uuid",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="string", example="550e8400-e29b-41d4-a716-446655440000")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Dados do agendamento",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="id", type="integer", example=1),
+     *             @OA\Property(property="uuid", type="string", example="550e8400-e29b-41d4-a716-446655440000"),
+     *             @OA\Property(property="data", type="string", format="date", example="2023-12-15"),
+     *             @OA\Property(property="horario", type="string", example="14:00:00"),
+     *             @OA\Property(property="quantidade", type="integer", example=2),
+     *             @OA\Property(property="observacao", type="string", example="Observação do agendamento"),
+     *             @OA\Property(property="grupo", type="boolean", example=false),
+     *             @OA\Property(property="user_id", type="integer", example=1)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Agendamento não encontrado",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Agendamento não encontrado")
+     *         )
+     *     )
+     * )
+     */
+    public function show(string $uuid)
+    {
+        try {
+            $agendamento = Agendamento::where('uuid', $uuid)->first();
+
+            if (!$agendamento) {
+                return response()->json(['message' => 'Agendamento não encontrado'], 404);
+            }
+
+            return new AgendamentosResource($agendamento);
+        } catch (Exception $exception) {
+            return response()->json(['message' => 'Erro interno do servidor'], 500);
+        }
+    }
+
+    /**
      * @OA\Delete(
      *     path="/api/admin/agendamento/{id}",
      *     tags={"Agendamentos"},
