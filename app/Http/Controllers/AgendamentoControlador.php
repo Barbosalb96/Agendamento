@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Application\Agendamentos\Services\BuscarAgendamentoServico;
 use App\Application\Agendamentos\Services\CancelarAgendamentoServico;
 use App\Application\Agendamentos\Services\CriarAgendamentoServico;
 use App\Application\Agendamentos\Services\ListarAgendamentoServico;
@@ -21,6 +22,7 @@ class AgendamentoControlador extends Controller
         private CriarAgendamentoServico $criarAgendamentoServico,
         private ListarAgendamentoServico $listarAgendamentoSerico,
         private CancelarAgendamentoServico $cancelarAgendamentoSerico,
+        private BuscarAgendamentoServico $buscarAgendamentoServico,
     ) {}
 
     /**
@@ -189,7 +191,7 @@ class AgendamentoControlador extends Controller
     public function show(string $uuid)
     {
         try {
-            $agendamento = Agendamento::where('uuid', $uuid)->first();
+            $agendamento = $this->buscarAgendamentoServico->executar($uuid);
 
             if (!$agendamento) {
                 return response()->json([
