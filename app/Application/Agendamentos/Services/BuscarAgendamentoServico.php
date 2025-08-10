@@ -12,6 +12,6 @@ class BuscarAgendamentoServico
 
     public function executar(string $id)
     {
-        return $this->repositorio->buscar($id);
+        return $this->repositorio->buscarPorId($id);
     }
 }
