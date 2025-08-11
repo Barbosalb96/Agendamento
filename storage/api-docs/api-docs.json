@@ -17,7 +17,7 @@
     },
     "servers": [
         {
-            "url": "http://my-default-host.com",
+            "url": "http://127.0.0.1:8000",
             "description": "Servidor de desenvolvimento"
         }
     ],
@@ -29,15 +29,26 @@
                 ],
                 "summary": "Listar agendamentos",
                 "description": "Lista todos os agendamentos com filtros e paginação",
-                "operationId": "f8f55e62efaf559b69aaffe082c880d0",
+                "operationId": "263714070ed2ea33fd3310034ac2485c",
                 "parameters": [
+                    {
+                        "name": "X-Security-Hash",
+                        "in": "header",
+                        "description": "Hash de segurança obrigatório para acesso às rotas protegidas",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "d918deebb121aa0d437875f57b39cdf96dd8f85873d899b921e2706daddd4904"
+                        }
+                    },
                     {
                         "name": "page",
                         "in": "query",
-                        "description": "Número da página",
-                        "required": true,
+                        "description": "Número da página (padrão: 1)",
+                        "required": false,
                         "schema": {
                             "type": "integer",
+                            "default": 1,
                             "minimum": 1,
                             "example": 1
                         }
@@ -45,10 +56,11 @@
                     {
                         "name": "per_page",
                         "in": "query",
-                        "description": "Itens por página",
-                        "required": true,
+                        "description": "Itens por página (padrão: 15)",
+                        "required": false,
                         "schema": {
                             "type": "integer",
+                            "default": 15,
                             "maximum": 100,
                             "minimum": 1,
                             "example": 15
@@ -83,31 +95,6 @@
                             "type": "string",
                             "example": "2023-12-31"
                         }
-                    },
-                    {
-                        "name": "status",
-                        "in": "query",
-                        "description": "Filtrar por status do agendamento",
-                        "required": false,
-                        "schema": {
-                            "type": "string",
-                            "enum": [
-                                "ativo",
-                                "cancelado",
-                                "finalizado"
-                            ],
-                            "example": "ativo"
-                        }
-                    },
-                    {
-                        "name": "user_id",
-                        "in": "query",
-                        "description": "Filtrar por ID do usuário",
-                        "required": false,
-                        "schema": {
-                            "type": "integer",
-                            "example": 1
-                        }
                     }
                 ],
                 "responses": {
@@ -116,36 +103,150 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "array",
-                                    "items": {
-                                        "properties": {
-                                            "uuid": {
-                                                "type": "string",
-                                                "example": "550e8400-e29b-41d4-a716-446655440000"
-                                            },
-                                            "data": {
-                                                "type": "string",
-                                                "example": "15/12/2023"
-                                            },
-                                            "horario": {
-                                                "type": "string",
-                                                "example": "14:00"
-                                            },
-                                            "grupo": {
-                                                "type": "boolean",
-                                                "example": false
-                                            },
-                                            "quantidade": {
-                                                "type": "integer",
-                                                "example": 2
-                                            },
-                                            "observacao": {
-                                                "type": "string",
-                                                "example": "Observação do agendamento"
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "uuid": {
+                                                        "type": "string",
+                                                        "example": "550e8400-e29b-41d4-a716-446655440000"
+                                                    },
+                                                    "nome": {
+                                                        "type": "string",
+                                                        "example": "João Silva"
+                                                    },
+                                                    "email": {
+                                                        "type": "string",
+                                                        "example": "joao.silva@email.com"
+                                                    },
+                                                    "cpf": {
+                                                        "type": "string",
+                                                        "example": "12345678901"
+                                                    },
+                                                    "telefone": {
+                                                        "type": "string",
+                                                        "example": "11987654321"
+                                                    },
+                                                    "data": {
+                                                        "type": "string",
+                                                        "example": "15/12/2023"
+                                                    },
+                                                    "horario": {
+                                                        "type": "string",
+                                                        "example": "14:00"
+                                                    },
+                                                    "grupo": {
+                                                        "type": "boolean",
+                                                        "example": false
+                                                    },
+                                                    "quantidade": {
+                                                        "type": "integer",
+                                                        "example": 2
+                                                    },
+                                                    "status": {
+                                                        "type": "string",
+                                                        "example": "ativo"
+                                                    },
+                                                    "observacao": {
+                                                        "type": "string",
+                                                        "example": "Observação do agendamento"
+                                                    },
+                                                    "horario_comparecimento": {
+                                                        "description": "Horário de comparecimento registrado no QR Code (formato H:i)",
+                                                        "type": "string",
+                                                        "example": "14:05"
+                                                    },
+                                                    "horario_entrada": {
+                                                        "description": "Horário de entrada confirmada (formato H:i)",
+                                                        "type": "string",
+                                                        "example": "14:10"
+                                                    },
+                                                    "created_at": {
+                                                        "type": "string",
+                                                        "example": "2023-12-10T10:30:00Z"
+                                                    },
+                                                    "updated_at": {
+                                                        "type": "string",
+                                                        "example": "2023-12-10T10:30:00Z"
+                                                    }
+                                                },
+                                                "type": "object"
                                             }
                                         },
-                                        "type": "object"
-                                    }
+                                        "current_page": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "per_page": {
+                                            "type": "integer",
+                                            "example": 15
+                                        },
+                                        "total": {
+                                            "type": "integer",
+                                            "example": 150
+                                        },
+                                        "last_page": {
+                                            "type": "integer",
+                                            "example": 10
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Token de autenticação inválido",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Erro de validação nos parâmetros",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "The given data was invalid."
+                                        },
+                                        "errors": {
+                                            "properties": {
+                                                "page": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string",
+                                                        "example": "O campo page deve ser maior que 0."
+                                                    }
+                                                },
+                                                "per_page": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string",
+                                                        "example": "O campo per_page deve estar entre 1 e 100."
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
                                 }
                             }
                         }
@@ -153,23 +254,28 @@
                 },
                 "security": [
                     {
-                        "sanctum": []
+                        "sanctum": [
+                            "d918deebb121aa0d437875f57b39cdf96dd8f85873d899b921e2706daddd4904"
+                        ]
                     }
                 ]
-            },
+            }
+        },
+        "/api/agendar": {
             "post": {
                 "tags": [
                     "Agendamentos"
                 ],
                 "summary": "Criar agendamento",
                 "description": "Cria um novo agendamento. Requer dados pessoais completos, data/horário válidos e respeita regras de capacidade e disponibilidade.",
-                "operationId": "4861258811e82db7f7c4e6615ec6cbc7",
+                "operationId": "5e561e76186aba5e808fc6d47b5aa12f",
                 "requestBody": {
                     "required": true,
                     "content": {
                         "application/json": {
                             "schema": {
                                 "required": [
+                                    "nome",
                                     "email",
                                     "cpf",
                                     "rg",
@@ -180,22 +286,26 @@
                                     "quantidade"
                                 ],
                                 "properties": {
-                                    "uuid": {
-                                        "description": "UUID opcional para identificação única",
-                                        "type": "string",
-                                        "format": "uuid",
-                                        "example": "550e8400-e29b-41d4-a716-446655440000"
-                                    },
                                     "email": {
                                         "description": "E-mail único do solicitante",
                                         "type": "string",
                                         "format": "email",
                                         "example": "joao.silva@email.com"
                                     },
+                                    "nome": {
+                                        "description": "Nome completo do solicitante",
+                                        "type": "string",
+                                        "example": "João Silva Santos"
+                                    },
                                     "cpf": {
                                         "description": "CPF único (11 dígitos, apenas números)",
                                         "type": "string",
                                         "pattern": "^\\d{11}$",
+                                        "example": "12345678901"
+                                    },
+                                    "documento": {
+                                        "description": "Documento ",
+                                        "type": "string",
                                         "example": "12345678901"
                                     },
                                     "rg": {
@@ -353,20 +463,32 @@
                 },
                 "security": [
                     {
-                        "sanctum": []
+                        "sanctum": [
+                            "d918deebb121aa0d437875f57b39cdf96dd8f85873d899b921e2706daddd4904"
+                        ]
                     }
                 ]
             }
         },
-        "/api/admin/agendamento/{uuid}": {
+        "/api/admin/agendamento/find/{uuid}": {
             "get": {
                 "tags": [
                     "Agendamentos"
                 ],
                 "summary": "Visualizar agendamento",
                 "description": "Visualiza os dados de um agendamento específico pelo UUID",
-                "operationId": "9adb7e74ccec2d3ac4fbda0ab28a816b",
+                "operationId": "d43717d36f5b4c46280c658d7b8ea8f6",
                 "parameters": [
+                    {
+                        "name": "X-Security-Hash",
+                        "in": "header",
+                        "description": "Hash de segurança obrigatório para acesso às rotas protegidas",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "d918deebb121aa0d437875f57b39cdf96dd8f85873d899b921e2706daddd4904"
+                        }
+                    },
                     {
                         "name": "uuid",
                         "in": "path",
@@ -384,9 +506,37 @@
                             "application/json": {
                                 "schema": {
                                     "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
                                         "uuid": {
                                             "type": "string",
                                             "example": "550e8400-e29b-41d4-a716-446655440000"
+                                        },
+                                        "nome": {
+                                            "type": "string",
+                                            "example": "João Silva"
+                                        },
+                                        "email": {
+                                            "type": "string",
+                                            "example": "joao.silva@email.com"
+                                        },
+                                        "cpf": {
+                                            "type": "string",
+                                            "example": "12345678901"
+                                        },
+                                        "rg": {
+                                            "type": "string",
+                                            "example": "12.345.678-9"
+                                        },
+                                        "telefone": {
+                                            "type": "string",
+                                            "example": "11987654321"
+                                        },
+                                        "nacionalidade": {
+                                            "type": "string",
+                                            "example": "brasileiro"
                                         },
                                         "data": {
                                             "type": "string",
@@ -404,9 +554,35 @@
                                             "type": "integer",
                                             "example": 2
                                         },
+                                        "status": {
+                                            "type": "string",
+                                            "example": "ativo"
+                                        },
                                         "observacao": {
                                             "type": "string",
                                             "example": "Observação do agendamento"
+                                        },
+                                        "deficiencia": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "horario_comparecimento": {
+                                            "description": "Horário de comparecimento registrado no QR Code (formato H:i)",
+                                            "type": "string",
+                                            "example": "14:05"
+                                        },
+                                        "horario_entrada": {
+                                            "description": "Horário de entrada confirmada (formato H:i)",
+                                            "type": "string",
+                                            "example": "14:10"
+                                        },
+                                        "created_at": {
+                                            "type": "string",
+                                            "example": "2023-12-10T10:30:00Z"
+                                        },
+                                        "updated_at": {
+                                            "type": "string",
+                                            "example": "2023-12-10T10:30:00Z"
                                         }
                                     },
                                     "type": "object"
@@ -433,7 +609,9 @@
                 },
                 "security": [
                     {
-                        "sanctum": []
+                        "sanctum": [
+                            "d918deebb121aa0d437875f57b39cdf96dd8f85873d899b921e2706daddd4904"
+                        ]
                     }
                 ]
             }
@@ -445,8 +623,18 @@
                 ],
                 "summary": "Cancelar agendamento",
                 "description": "Cancela um agendamento existente",
-                "operationId": "b8e8969cc3ca4223a778b01e5c708547",
+                "operationId": "cba73b4ff8e8e5485544adbeb52ca64c",
                 "parameters": [
+                    {
+                        "name": "X-Security-Hash",
+                        "in": "header",
+                        "description": "Hash de segurança obrigatório para acesso às rotas protegidas",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "d918deebb121aa0d437875f57b39cdf96dd8f85873d899b921e2706daddd4904"
+                        }
+                    },
                     {
                         "name": "id",
                         "in": "path",
@@ -473,11 +661,61 @@
                                 }
                             }
                         }
+                    },
+                    "404": {
+                        "description": "Agendamento não encontrado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Agendamento não encontrado"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Token de autenticação inválido",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erro interno do servidor",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Internal server error"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     }
                 },
                 "security": [
                     {
-                        "sanctum": []
+                        "sanctum": [
+                            "d918deebb121aa0d437875f57b39cdf96dd8f85873d899b921e2706daddd4904"
+                        ]
                     }
                 ]
             }
@@ -489,8 +727,18 @@
                 ],
                 "summary": "Total de agendamentos por dia",
                 "description": "Retorna o total de agendamentos para um dia específico",
-                "operationId": "49113a889538dc7e2f420a36cea19108",
+                "operationId": "28c0be26dbae2e2955a9d4e013b9b9fe",
                 "parameters": [
+                    {
+                        "name": "X-Security-Hash",
+                        "in": "header",
+                        "description": "Hash de segurança obrigatório para acesso às rotas protegidas",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "d918deebb121aa0d437875f57b39cdf96dd8f85873d899b921e2706daddd4904"
+                        }
+                    },
                     {
                         "name": "data",
                         "in": "query",
@@ -531,20 +779,32 @@
                 },
                 "security": [
                     {
-                        "sanctum": []
+                        "sanctum": [
+                            "d918deebb121aa0d437875f57b39cdf96dd8f85873d899b921e2706daddd4904"
+                        ]
                     }
                 ]
             }
         },
-        "/api/admin/agendamento/vagas-por-horario": {
+        "/api/vagas-por-horario": {
             "get": {
                 "tags": [
                     "Agendamentos"
                 ],
                 "summary": "Consultar vagas por horário",
                 "description": "Consulta a disponibilidade de vagas em uma data específica",
-                "operationId": "6fcf6c0012911d6b89c23b7882df1dd1",
+                "operationId": "1997dbb2193f650a899554536784434d",
                 "parameters": [
+                    {
+                        "name": "X-Security-Hash",
+                        "in": "header",
+                        "description": "Hash de segurança obrigatório para acesso às rotas protegidas",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "d918deebb121aa0d437875f57b39cdf96dd8f85873d899b921e2706daddd4904"
+                        }
+                    },
                     {
                         "name": "data",
                         "in": "query",
@@ -600,7 +860,386 @@
                 },
                 "security": [
                     {
-                        "sanctum": []
+                        "sanctum": [
+                            "d918deebb121aa0d437875f57b39cdf96dd8f85873d899b921e2706daddd4904"
+                        ]
+                    }
+                ]
+            }
+        },
+        "/api/admin/agendamento/relatorio": {
+            "get": {
+                "tags": [
+                    "Agendamentos"
+                ],
+                "summary": "Relatório de agendamentos",
+                "description": "Gera relatório com quantidade de agendamentos por dia, mês e distribuição por horário",
+                "operationId": "0d6deae42ddca21e1e1ac3ae94209754",
+                "parameters": [
+                    {
+                        "name": "X-Security-Hash",
+                        "in": "header",
+                        "description": "Hash de segurança obrigatório para acesso às rotas protegidas",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "d918deebb121aa0d437875f57b39cdf96dd8f85873d899b921e2706daddd4904"
+                        }
+                    },
+                    {
+                        "name": "data",
+                        "in": "query",
+                        "description": "Data de referência para o relatório (Y-m-d)",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "date",
+                            "example": "2024-12-15"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Relatório gerado com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data_referencia": {
+                                            "type": "string",
+                                            "example": "2024-12-15"
+                                        },
+                                        "quantidade_dia": {
+                                            "type": "integer",
+                                            "example": 75
+                                        },
+                                        "quantidade_mes": {
+                                            "type": "integer",
+                                            "example": 1520
+                                        },
+                                        "grafico": {
+                                            "properties": {
+                                                "labels": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string",
+                                                        "example": "09:00"
+                                                    }
+                                                },
+                                                "values": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "integer",
+                                                        "example": 5
+                                                    }
+                                                },
+                                                "raw": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "horario": {
+                                                                "type": "string",
+                                                                "example": "09:00"
+                                                            },
+                                                            "total": {
+                                                                "type": "integer",
+                                                                "example": 5
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Erro de validação",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "The given data was invalid."
+                                        },
+                                        "errors": {
+                                            "properties": {
+                                                "data": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string",
+                                                        "example": "O campo data é obrigatório."
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": [
+                            "d918deebb121aa0d437875f57b39cdf96dd8f85873d899b921e2706daddd4904"
+                        ]
+                    }
+                ]
+            }
+        },
+        "/api/validar-qrcode/{uuid}": {
+            "get": {
+                "tags": [
+                    "QR Code"
+                ],
+                "summary": "Validar QR Code",
+                "description": "Valida um QR Code de agendamento e registra o status da chegada baseado no horário",
+                "operationId": "a4597f0d018c7d7d3b875c45b5a346b3",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "550e8400-e29b-41d4-a716-446655440000"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "QR Code válido - Visitante chegou dentro do prazo",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "mensagem": {
+                                            "type": "string",
+                                            "example": "QR Code válido"
+                                        },
+                                        "status": {
+                                            "description": "Status da chegada: verde=pontual, laranja=atraso aceitável, vermelho=muito atrasado",
+                                            "type": "string",
+                                            "enum": [
+                                                "verde",
+                                                "laranja",
+                                                "vermelho"
+                                            ],
+                                            "example": "verde"
+                                        },
+                                        "detalhe_status": {
+                                            "type": "string",
+                                            "example": "Chegou no horário ou antes do início."
+                                        },
+                                        "marcos": {
+                                            "properties": {
+                                                "chegada": {
+                                                    "description": "Horário atual da validação",
+                                                    "type": "string",
+                                                    "example": "15/12/2023 13:45"
+                                                },
+                                                "inicio": {
+                                                    "description": "Horário de início da visita",
+                                                    "type": "string",
+                                                    "example": "15/12/2023 14:00"
+                                                },
+                                                "fim": {
+                                                    "description": "Horário de término da visita",
+                                                    "type": "string",
+                                                    "example": "15/12/2023 15:00"
+                                                },
+                                                "limite_vermelho": {
+                                                    "description": "Limite para status vermelho (20min antes do fim)",
+                                                    "type": "string",
+                                                    "example": "15/12/2023 14:40"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "agendamento": {
+                                            "properties": {
+                                                "data": {
+                                                    "type": "string",
+                                                    "example": "15/12/2023"
+                                                },
+                                                "horario": {
+                                                    "type": "string",
+                                                    "example": "14:00"
+                                                },
+                                                "grupo": {
+                                                    "description": "Individual ou Grupo",
+                                                    "type": "string",
+                                                    "example": "Individual"
+                                                },
+                                                "quantidade": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "cpf": {
+                                                    "type": "string",
+                                                    "example": "12345678901"
+                                                },
+                                                "nome": {
+                                                    "type": "string",
+                                                    "example": "João Silva"
+                                                },
+                                                "observacao": {
+                                                    "type": "string",
+                                                    "example": "Necessário acessibilidade"
+                                                },
+                                                "status_reg": {
+                                                    "description": "Status registrado no agendamento",
+                                                    "type": "string",
+                                                    "example": "verde"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "QR Code não encontrado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "mensagem": {
+                                            "type": "string",
+                                            "example": "QR Code inválido ou agendamento não encontrado"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "QR Code expirado - Horário da visita já passou",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "mensagem": {
+                                            "type": "string",
+                                            "example": "QR Code inválido: horário expirado (visita já encerrada)."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/agendamento/confirmar": {
+            "post": {
+                "tags": [
+                    "Agendamentos"
+                ],
+                "summary": "Confirmar entrada do agendamento",
+                "description": "Confirma a entrada do visitante registrando o horário de entrada",
+                "operationId": "d05a5fb142b4f8ce2048d303f69237d2",
+                "parameters": [
+                    {
+                        "name": "X-Security-Hash",
+                        "in": "header",
+                        "description": "Hash de segurança obrigatório para acesso às rotas protegidas",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "d918deebb121aa0d437875f57b39cdf96dd8f85873d899b921e2706daddd4904"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "uuid"
+                                ],
+                                "properties": {
+                                    "uuid": {
+                                        "description": "UUID do agendamento",
+                                        "type": "string",
+                                        "example": "550e8400-e29b-41d4-a716-446655440000"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Entrada confirmada com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "string",
+                                            "example": "Confirmado com sucesso"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Agendamento não encontrado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Agendamento não encontrado"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Token de autenticação inválido",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": [
+                            "d918deebb121aa0d437875f57b39cdf96dd8f85873d899b921e2706daddd4904"
+                        ]
                     }
                 ]
             }
@@ -1028,7 +1667,7 @@
                 ],
                 "summary": "Login do usuário",
                 "description": "Autentica um usuário e retorna um token de acesso",
-                "operationId": "42f73b33a1e0a43645f398cf4816eb60",
+                "operationId": "97e61fbe879f3468ebf503966c2d3482",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -1114,7 +1753,7 @@
                 ],
                 "summary": "Redefinir senha",
                 "description": "Redefine a senha do usuário usando token de reset",
-                "operationId": "fd7ba52856eb1daa766b470920f1ccdf",
+                "operationId": "10f38d3cc3cd2ec2cf7badbdcb0f3cb1",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -1188,7 +1827,7 @@
                 ],
                 "summary": "Solicitar reset de senha",
                 "description": "Solicita um token para reset de senha por email",
-                "operationId": "1d61d671c874272f26a06bf4ce728176",
+                "operationId": "295b1fe83af4b8dd46a611fe761c502b",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -1219,86 +1858,6 @@
                                         "mensagem": {
                                             "type": "string",
                                             "example": "Token enviado para o e-mail se existir um usuário com esse e-mail."
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/api/validar-qrcode/{uuid}": {
-            "get": {
-                "tags": [
-                    "QR Code"
-                ],
-                "summary": "Validar QR Code",
-                "description": "Valida um QR Code de agendamento",
-                "operationId": "ec59a5401563eef45a72398f00a95390",
-                "parameters": [
-                    {
-                        "name": "uuid",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "string",
-                            "example": "abc123-def456-ghi789"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "QR Code válido",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "mensagem": {
-                                            "type": "string",
-                                            "example": "QR Code válido"
-                                        },
-                                        "agendamento": {
-                                            "properties": {
-                                                "data": {
-                                                    "type": "string",
-                                                    "example": "15/12/2023"
-                                                },
-                                                "horario": {
-                                                    "type": "string",
-                                                    "example": "14:00"
-                                                },
-                                                "grupo": {
-                                                    "type": "string",
-                                                    "example": "Sim"
-                                                },
-                                                "quantidade": {
-                                                    "type": "integer",
-                                                    "example": 2
-                                                },
-                                                "observacao": {
-                                                    "type": "string",
-                                                    "example": "Observação do agendamento"
-                                                }
-                                            },
-                                            "type": "object"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "QR Code inválido",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "mensagem": {
-                                            "type": "string",
-                                            "example": "QR Code inválido ou agendamento não encontrado"
                                         }
                                     },
                                     "type": "object"

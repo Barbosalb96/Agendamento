@@ -16,8 +16,7 @@ return new class extends Migration
             $table->date('data');
             $table->time('horario_inicio')->nullable();
             $table->time('horario_fim')->nullable();
-            $table->string('tipo')->nullable(); // ex: feriado, manutenção
-            $table->text('observacao')->nullable();
+            $table->string('descricao')->nullable();
             $table->timestamps();
         });
     }

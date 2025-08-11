@@ -26,7 +26,7 @@ class Agendamento extends Model
     protected static function booted(): void
     {
         static::creating(function (Agendamento $agendamento) {
-                $agendamento->uuid = (string) Str::uuid();
+            $agendamento->uuid = (string)Str::uuid();
         });
     }
 
@@ -35,16 +35,20 @@ class Agendamento extends Model
         'nome',
         'email',
         'cpf',
+        'documento',
         'rg',
         'telefone',
         'nacionalidade',
         'nacionalidade_grupo',
         'deficiencia',
         'data',
+        'status',
         'horario',
         'grupo',
         'observacao',
         'quantidade',
+        'horario_comparecimento',
+        'horario_entrada'
     ];
 
     protected $casts = [
@@ -57,21 +61,21 @@ class Agendamento extends Model
     protected function email(): Attribute
     {
         return Attribute::make(
-            set: fn ($v) => is_string($v) ? mb_strtolower(trim($v)) : $v,
+            set: fn($v) => is_string($v) ? mb_strtolower(trim($v)) : $v,
         );
     }
 
     protected function cpf(): Attribute
     {
         return Attribute::make(
-            set: fn ($v) => is_string($v) ? preg_replace('/\D+/', '', $v) : $v,
+            set: fn($v) => is_string($v) ? preg_replace('/\D+/', '', $v) : $v,
         );
     }
 
     protected function telefone(): Attribute
     {
         return Attribute::make(
-            set: fn ($v) => is_string($v) ? preg_replace('/\D+/', '', $v) : $v,
+            set: fn($v) => is_string($v) ? preg_replace('/\D+/', '', $v) : $v,
         );
     }
 
@@ -87,8 +91,8 @@ class Agendamento extends Model
                     return Carbon::createFromFormat('H:i:s', $value)->format('H:i');
                 } catch (\Throwable) {
                     // Se por algum motivo vier 'H:i', apenas padroniza
-                    if (preg_match('/^\d{2}:\d{2}$/', (string) $value)) {
-                        return (string) $value;
+                    if (preg_match('/^\d{2}:\d{2}$/', (string)$value)) {
+                        return (string)$value;
                     }
 
                     return $value;
@@ -127,7 +131,7 @@ class Agendamento extends Model
     public function getHorarioFormatadoAttribute(): string
     {
         // usa o accessor de 'horario' que já devolve 'H:i'
-        return (string) $this->horario;
+        return (string)$this->horario;
     }
 
     public function scopeDoDia($query, Carbon|string $data)

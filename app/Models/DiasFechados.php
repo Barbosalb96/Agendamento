@@ -13,7 +13,7 @@ class DiasFechados extends Model
         'data',
         'horario_inicio',
         'horario_fim',
-        'tipo',
+        'descricao',
         'observacao',
     ];
 

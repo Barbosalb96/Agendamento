@@ -25,9 +25,13 @@ class StoreAgendamentoRequest extends FormRequest
                 'email',
             ],
             'cpf' => [
-                'required',
+                'required_without:documento',
                 'regex:/^\d{11}$/',
                 'cpf',
+            ],
+            'documento' => [
+                'required_without:cpf',
+                'regex:/^\d{11}$/',
             ],
             'rg' => ['required', 'string', 'max:20', 'regex:/^[0-9.\-Xx]+$/'],
             'telefone' => [
@@ -57,9 +61,9 @@ class StoreAgendamentoRequest extends FormRequest
                         return;
                     }
 
-                    $hour = (int) $time->format('H');
-                    if ($hour < 9 || $hour > 17) {
-                        $fail('Os horários disponíveis são apenas entre 09:00 e 17:00, em intervalos de 1 hora.');
+                    $hour = (int)$time->format('H');
+                    if ($hour < 9 || $hour > 16) {
+                        $fail('Os horários disponíveis são apenas entre 09:00 e 16:00, em intervalos de 1 hora.');
                     }
                 },
             ],
@@ -81,7 +85,7 @@ class StoreAgendamentoRequest extends FormRequest
             $input['telefone'] = preg_replace('/\D+/', '', $input['telefone']);
         }
 
-        if (! empty($input['horario'])) {
+        if (!empty($input['horario'])) {
             try {
                 $input['horario'] = Carbon::parse($input['horario'])->format('H:i');
             } catch (\Throwable $e) {
@@ -89,7 +93,7 @@ class StoreAgendamentoRequest extends FormRequest
         }
 
         $user = $this->user();
-        if ($user && method_exists($user, 'isAdmin') && ! $user->isAdmin()) {
+        if ($user && method_exists($user, 'isAdmin') && !$user->isAdmin()) {
             $input['user_id'] = $user->id;
         }
 
@@ -104,10 +108,11 @@ class StoreAgendamentoRequest extends FormRequest
             $horario = $this->input('horario');
             $email = $this->input('email');
             $cpf = $this->input('cpf');
+            $documento = $this->input('documento');
             $grupo = $this->boolean('grupo');
-            $quantidade = (int) $this->input('quantidade');
+            $quantidade = (int)$this->input('quantidade');
 
-            if (! $data || ! $horario || ! $quantidade) {
+            if (!$data || !$horario || !$quantidade) {
                 return;
             }
 
@@ -158,10 +163,12 @@ class StoreAgendamentoRequest extends FormRequest
             $jaTemOutroQuery = Agendamento::whereDate('data', $dataAgendada)
                 ->whereBetween('horario', [$inicioJanela, $fimJanela]);
 
-            if (! empty($email)) {
+            if (!empty($email)) {
                 $jaTemOutroQuery->where('email', $email);
-            } elseif (! empty($cpf)) {
+            } elseif (!empty($cpf)) {
                 $jaTemOutroQuery->where('cpf', $cpf);
+            } elseif (!empty($documento)) {
+                $jaTemOutroQuery->where('documento', $documento);
             }
 
             if ($jaTemOutroQuery->exists()) {
@@ -185,11 +192,13 @@ class StoreAgendamentoRequest extends FormRequest
             'email.required' => 'Informe um e-mail válido para contato.',
             'email.email' => 'O formato do e-mail está incorreto.',
 
-            // CPF
-            'cpf.required' => 'O CPF é obrigatório para o agendamento.',
-            'cpf.regex' => 'O CPF deve ter exatamente 11 dígitos (apenas números).',
+            'cpf.required_without' => 'O campo CPF é obrigatório quando o documento não é informado.',
+            'cpf.regex' => 'O CPF deve conter exatamente 11 dígitos numéricos.',
             'cpf.cpf' => 'O CPF informado não é válido.',
 
+            'documento.required_without' => 'O campo Documento é obrigatório quando o CPF não é informado.',
+            'documento.regex' => 'O Documento deve conter exatamente 11 dígitos numéricos.',
+            'documento.cpf' => 'O Documento informado não é válido.',
             // RG
             'rg.required' => 'O número do RG é obrigatório.',
             'rg.string' => 'O RG deve ser um texto válido.',

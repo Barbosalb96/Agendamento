@@ -1,8 +1,8 @@
 <?php
 
-use App\Http\Controllers\AgendamentoControlador;
+use App\Http\Controllers\AgendamentoController;
 use App\Http\Controllers\GestaoDiasController;
-use App\Http\Controllers\UsuarioControlador;
+use App\Http\Controllers\UsuarioController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -20,19 +20,22 @@ Route::prefix('admin')->middleware('auth:sanctum')->group(function () {
     });
 
     Route::prefix('agendamento')->middleware('auth:sanctum')->group(function () {
-        Route::get('/', [AgendamentoControlador::class, 'index']);
-        Route::get('/vagas-por-horario', [AgendamentoControlador::class, 'vagasPorHorario']);
-        Route::get('/total-dia', [AgendamentoControlador::class, 'agendamentoDia']);
-        Route::get('/find/{uuid}', [AgendamentoControlador::class, 'show']);
-        Route::delete('/{id}', [AgendamentoControlador::class, 'destroy']);
+        Route::get('/', [AgendamentoController::class, 'index']);
+      Route::get('/total-dia', [AgendamentoController::class, 'agendamentoDia']);
+        Route::get('/find/{uuid}', [AgendamentoController::class, 'show']);
+        Route::delete('/{id}', [AgendamentoController::class, 'destroy']);
+        Route::get('relatorio',[AgendamentoController::class,'relatorio']);
+        Route::post('confirmar',[AgendamentoController::class,'confirmar']);
     });
 });
 
-Route::post('/login', [UsuarioControlador::class, 'login']);
-Route::post('/password/reset', [UsuarioControlador::class, 'resetSenha']);
-Route::post('/password/request-reset', [UsuarioControlador::class, 'requestReset']);
+Route::post('/login', [UsuarioController::class, 'login']);
+Route::post('/password/reset', [UsuarioController::class, 'resetSenha']);
+Route::post('/password/request-reset', [UsuarioController::class, 'requestReset']);
 
-Route::get('validar-qrcode/{uuid}', [UsuarioControlador::class, 'validarQRCode'])
+Route::get('validar-qrcode/{uuid}', [AgendamentoController::class, 'validarQRCode'])
     ->name('validar-qrcode');
 
-Route::post('/agendar', [AgendamentoControlador::class, 'agendar']);
+Route::post('/agendar', [AgendamentoController::class, 'agendar']);
+Route::get('/vagas-por-horario', [AgendamentoController::class, 'vagasPorHorario']);
+

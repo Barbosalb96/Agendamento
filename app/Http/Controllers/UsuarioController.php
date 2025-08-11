@@ -13,7 +13,7 @@ use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 
-class UsuarioControlador extends Controller
+class UsuarioController extends Controller
 {
     /**
      * @OA\Post(
@@ -166,73 +166,4 @@ class UsuarioControlador extends Controller
         return response()->json(['mensagem' => 'Token enviado para o e-mail se existir um usuário com esse e-mail.']);
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/validar-qrcode/{uuid}",
-     *     tags={"QR Code"},
-     *     summary="Validar QR Code",
-     *     description="Valida um QR Code de agendamento",
-     *
-     *     @OA\Parameter(
-     *         name="uuid",
-     *         in="path",
-     *         required=true,
-     *
-     *         @OA\Schema(type="string", example="abc123-def456-ghi789")
-     *     ),
-     *
-     *     @OA\Response(
-     *         response=200,
-     *         description="QR Code válido",
-     *
-     *         @OA\JsonContent(
-     *
-     *             @OA\Property(property="mensagem", type="string", example="QR Code válido"),
-     *             @OA\Property(property="agendamento", type="object",
-     *                 @OA\Property(property="data", type="string", example="15/12/2023"),
-     *                 @OA\Property(property="horario", type="string", example="14:00"),
-     *                 @OA\Property(property="grupo", type="string", example="Sim"),
-     *                 @OA\Property(property="quantidade", type="integer", example=2),
-     *                 @OA\Property(property="observacao", type="string", example="Observação do agendamento")
-     *             )
-     *         )
-     *     ),
-     *
-     *     @OA\Response(
-     *         response=400,
-     *         description="QR Code inválido",
-     *
-     *         @OA\JsonContent(
-     *
-     *             @OA\Property(property="mensagem", type="string", example="QR Code inválido ou agendamento não encontrado")
-     *         )
-     *     )
-     * )
-     */
-    public function validarQRCode(string $uuid): JsonResponse
-    {
-
-        $agendamento = Agendamento::where('uuid', $uuid)->first();
-
-        if (! $agendamento) {
-            return response()->json(['mensagem' => 'QR Code inválido ou agendamento não encontrado']);
-        }
-
-        $invalid = $agendamento->data >= Carbon::now() && $agendamento->horario > Carbon::now()->format('H:i');
-
-        if (! $invalid) {
-            return response()->json(['mensagem' => 'QR Code inválido horario de agendamento superior a hora marcada']);
-        }
-
-        return response()->json([
-            'mensagem' => 'QR Code válido',
-            'agendamento' => [
-                'data' => $agendamento->data_formatada ?? Carbon::parse($agendamento->data)->format('d/m/Y'),
-                'horario' => $agendamento->horario_formatado ?? substr($agendamento->horario, 0, 5),
-                'grupo' => $agendamento->grupo ? 'Sim' : 'Não',
-                'quantidade' => $agendamento->quantidade,
-                'observacao' => $agendamento->observacao,
-            ],
-        ]);
-    }
 }
