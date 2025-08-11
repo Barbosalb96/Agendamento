@@ -33,7 +33,6 @@ class Agendamento extends Model
     protected $fillable = [
         'uuid',
         'nome',
-        'user_id',
         'email',
         'cpf',
         'rg',

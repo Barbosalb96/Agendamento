@@ -18,10 +18,10 @@ class CancelarAgendamentoServico
         dispatch(new MailDispatchDefault(
             'Cancelamento de Agendamento - Governo do Maranhão',
             [
-                'agendamento' => $this->agendamento,
+                'agendamento' => $agendamento,
             ],
             'cancelamento_agendamento',
-            $agendamento->user->email
+            $agendamento->email
         ));
     }
 }

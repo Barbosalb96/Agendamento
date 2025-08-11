@@ -11,4 +11,5 @@ interface ContratoAgendamentoRepositorio
     public function cancelar(string $id, array $data): Agendamento;
 
     public function buscar(array $filter);
+    public function quantidadePorDia(array $filter);
 }

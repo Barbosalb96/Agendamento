@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Application\Agendamentos\Services\AgendamentoPorDia;
 use App\Application\Agendamentos\Services\BuscarAgendamentoServico;
 use App\Application\Agendamentos\Services\CancelarAgendamentoServico;
 use App\Application\Agendamentos\Services\CriarAgendamentoServico;
@@ -18,11 +19,14 @@ use Illuminate\Http\Request;
 class AgendamentoControlador extends Controller
 {
     public function __construct(
-        private CriarAgendamentoServico $criarAgendamentoServico,
-        private ListarAgendamentoServico $listarAgendamentoSerico,
+        private CriarAgendamentoServico    $criarAgendamentoServico,
+        private ListarAgendamentoServico   $listarAgendamentoSerico,
         private CancelarAgendamentoServico $cancelarAgendamentoSerico,
-        private BuscarAgendamentoServico $buscarAgendamentoServico,
-    ) {}
+        private AgendamentoPorDia          $agendamentoPorDia,
+        private BuscarAgendamentoServico   $buscarAgendamentoServico,
+    )
+    {
+    }
 
     /**
      * @OA\Get(
@@ -282,7 +286,7 @@ class AgendamentoControlador extends Controller
 
     /**
      * @OA\Get(
-     *     path="/api/admin/agendamento/{uuid}",
+     *     path="/api/admin/agendamento/find/{uuid}",
      *     tags={"Agendamentos"},
      *     summary="Visualizar agendamento",
      *     description="Visualiza os dados de um agendamento específico pelo UUID",
@@ -327,7 +331,7 @@ class AgendamentoControlador extends Controller
         try {
             $agendamento = $this->buscarAgendamentoServico->executar($uuid);
 
-            if (! $agendamento) {
+            if (!$agendamento) {
                 return response()->json([
                     'mensagem' => 'Agendamento não encontrado.',
                     'erro' => 'O agendamento com este UUID não existe no sistema.',
@@ -384,7 +388,47 @@ class AgendamentoControlador extends Controller
         }
     }
 
+    /**
+     * @OA\Get(
+     *     path="/api/admin/agendamento/total-dia",
+     *     tags={"Agendamentos"},
+     *     summary="Total de agendamentos por dia",
+     *     description="Retorna o total de agendamentos para um dia específico",
+     *     security={{"sanctum":{}}},
+     *
+     *     @OA\Parameter(
+     *         name="data",
+     *         in="query",
+     *         required=true,
+     *         @OA\Schema(type="string", format="date", example="2024-12-15"),
+     *         description="Data para consulta dos agendamentos (Y-m-d)"
+     *     ),
+     *
+     *     @OA\Response(
+     *         response=200,
+     *         description="Total de agendamentos do dia",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="data", type="string", example="2024-12-15"),
+     *             @OA\Property(property="total_agendamentos", type="integer", example=25),
+     *             @OA\Property(property="total_pessoas", type="integer", example=35)
+     *         )
+     *     )
+     * )
+     */
+    public function agendamentoDia(Request $request)
+    {
+        try {
+            $data = $request->all();
+            $resultado = $this->agendamentoPorDia->executar($data);
+
+            return response()->json($resultado);
+        } catch (Exception $exception) {
+            throw $exception;
+        }
+    }
+
     // Controller
+
     /**
      * @OA\Get(
      *     path="/api/admin/agendamento/vagas-por-horario",

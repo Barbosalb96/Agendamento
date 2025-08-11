@@ -219,6 +219,15 @@
                                         ],
                                         "example": "brasileiro"
                                     },
+                                    "nacionalidade_grupo": {
+                                        "description": "Nacionalidade do solicitante",
+                                        "type": "string",
+                                        "enum": [
+                                            "brasileiro",
+                                            "estrangeiro"
+                                        ],
+                                        "example": "brasileiro"
+                                    },
                                     "deficiencia": {
                                         "description": "Indica se a pessoa possui deficiência (opcional)",
                                         "type": "boolean",
@@ -458,6 +467,60 @@
                                         "mensagem": {
                                             "type": "string",
                                             "example": "Agendamento cancelado com sucesso"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/agendamento/total-dia": {
+            "get": {
+                "tags": [
+                    "Agendamentos"
+                ],
+                "summary": "Total de agendamentos por dia",
+                "description": "Retorna o total de agendamentos para um dia específico",
+                "operationId": "49113a889538dc7e2f420a36cea19108",
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "query",
+                        "description": "Data para consulta dos agendamentos (Y-m-d)",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "date",
+                            "example": "2024-12-15"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Total de agendamentos do dia",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "string",
+                                            "example": "2024-12-15"
+                                        },
+                                        "total_agendamentos": {
+                                            "type": "integer",
+                                            "example": 25
+                                        },
+                                        "total_pessoas": {
+                                            "type": "integer",
+                                            "example": 35
                                         }
                                     },
                                     "type": "object"

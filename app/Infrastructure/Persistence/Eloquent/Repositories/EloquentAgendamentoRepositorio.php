@@ -34,7 +34,6 @@ class EloquentAgendamentoRepositorio implements ContratoAgendamentoRepositorio
 
     public function buscar(array $filter)
     {
-        // Normalização de datas (se o método estiver num controller, injete o request ou extraia helper)
         $data = $this->normalizeDate($filter['data'] ?? null);
         $dataInicio = $this->normalizeDate($filter['data_inicio'] ?? null);
         $dataFim = $this->normalizeDate($filter['data_fim'] ?? null);
@@ -75,5 +74,27 @@ class EloquentAgendamentoRepositorio implements ContratoAgendamentoRepositorio
         }
 
         return null;
+    }
+
+    public function quantidadePorDia(array $filter)
+    {
+        $data = $this->normalizeDate($filter['data'] ?? null);
+        
+        if (!$data) {
+            return [
+                'data' => null,
+                'total_agendamentos' => 0,
+                'total_pessoas' => 0
+            ];
+        }
+
+        $totalAgendamentos = Agendamento::whereDate('data', $data)->count();
+        $totalPessoas = Agendamento::whereDate('data', $data)->sum('quantidade');
+
+        return [
+            'data' => $data,
+            'total_agendamentos' => $totalAgendamentos,
+            'total_pessoas' => $totalPessoas
+        ];
     }
 }

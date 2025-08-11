@@ -22,7 +22,8 @@ Route::prefix('admin')->middleware('auth:sanctum')->group(function () {
     Route::prefix('agendamento')->middleware('auth:sanctum')->group(function () {
         Route::get('/', [AgendamentoControlador::class, 'index']);
         Route::get('/vagas-por-horario', [AgendamentoControlador::class, 'vagasPorHorario']);
-        Route::get('/{uuid}', [AgendamentoControlador::class, 'show']);
+        Route::get('/total-dia', [AgendamentoControlador::class, 'agendamentoDia']);
+        Route::get('/find/{uuid}', [AgendamentoControlador::class, 'show']);
         Route::delete('/{id}', [AgendamentoControlador::class, 'destroy']);
     });
 });
