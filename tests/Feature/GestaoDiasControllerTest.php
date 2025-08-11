@@ -17,6 +17,7 @@ class GestaoDiasControllerTest extends TestCase
     {
         $user = User::factory()->create();
         Sanctum::actingAs($user);
+
         return $user;
     }
 
@@ -37,12 +38,12 @@ class GestaoDiasControllerTest extends TestCase
                         'horario_inicio',
                         'horario_fim',
                         'tipo',
-                        'observacao'
-                    ]
+                        'observacao',
+                    ],
                 ],
                 'current_page',
                 'per_page',
-                'total'
+                'total',
             ]);
     }
 
@@ -81,7 +82,7 @@ class GestaoDiasControllerTest extends TestCase
         $response->assertStatus(200)
             ->assertJson([
                 'current_page' => 2,
-                'per_page' => 5
+                'per_page' => 5,
             ]);
 
         $this->assertCount(5, $response->json('data'));
@@ -94,7 +95,7 @@ class GestaoDiasControllerTest extends TestCase
         $dia = DiasFechados::factory()->create([
             'data' => Carbon::tomorrow()->format('Y-m-d'),
             'tipo' => 'feriado',
-            'observacao' => 'Dia de teste'
+            'observacao' => 'Dia de teste',
         ]);
 
         $response = $this->getJson("/api/admin/gestao-dias/{$dia->id}");
@@ -114,7 +115,7 @@ class GestaoDiasControllerTest extends TestCase
 
         $response->assertStatus(404)
             ->assertJson([
-                'message' => 'Dia não encontrado'
+                'message' => 'Dia não encontrado',
             ]);
     }
 
@@ -127,7 +128,7 @@ class GestaoDiasControllerTest extends TestCase
             'horario_inicio' => '08:00',
             'horario_fim' => '18:00',
             'tipo' => 'bloqueio_total',
-            'observacao' => 'Manutenção do sistema'
+            'observacao' => 'Manutenção do sistema',
         ];
 
         $response = $this->postJson('/api/admin/gestao-dias/store', $dadosDia);
@@ -136,7 +137,7 @@ class GestaoDiasControllerTest extends TestCase
 
         $this->assertDatabaseHas('dias_fechados', [
             'tipo' => $dadosDia['tipo'],
-            'observacao' => $dadosDia['observacao']
+            'observacao' => $dadosDia['observacao'],
         ]);
     }
 
@@ -160,7 +161,7 @@ class GestaoDiasControllerTest extends TestCase
             'data' => Carbon::tomorrow()->format('Y-m-d'),
             'horario_inicio' => '08:00',
             'horario_fim' => '18:00',
-            'tipo' => 'tipo_inexistente'
+            'tipo' => 'tipo_inexistente',
         ];
 
         $response = $this->postJson('/api/admin/gestao-dias/store', $dadosDia);
@@ -180,7 +181,7 @@ class GestaoDiasControllerTest extends TestCase
             'data' => Carbon::tomorrow()->format('Y-m-d'),
             'horario_inicio' => '18:00',
             'horario_fim' => '08:00', // Hora fim antes da hora início
-            'tipo' => 'bloqueio_parcial'
+            'tipo' => 'bloqueio_parcial',
         ];
 
         $response = $this->postJson('/api/admin/gestao-dias/store', $dadosDia);
@@ -198,19 +199,19 @@ class GestaoDiasControllerTest extends TestCase
 
         $dia = DiasFechados::factory()->create([
             'tipo' => 'bloqueio_parcial',
-            'observacao' => 'Observação antiga'
+            'observacao' => 'Observação antiga',
         ]);
 
         $dadosAtualizacao = [
             'tipo' => 'feriado',
-            'observacao' => 'Observação atualizada'
+            'observacao' => 'Observação atualizada',
         ];
 
         $response = $this->putJson("/api/admin/gestao-dias/{$dia->id}", $dadosAtualizacao);
 
         $response->assertStatus(200)
             ->assertJson([
-                'message' => 'Dia atualizado com sucesso'
+                'message' => 'Dia atualizado com sucesso',
             ]);
 
         $dia->refresh();
@@ -223,12 +224,12 @@ class GestaoDiasControllerTest extends TestCase
         $this->authenticatedUser();
 
         $response = $this->putJson('/api/admin/gestao-dias/99999', [
-            'tipo' => 'feriado'
+            'tipo' => 'feriado',
         ]);
 
         $response->assertStatus(404)
             ->assertJson([
-                'message' => 'Dia não encontrado'
+                'message' => 'Dia não encontrado',
             ]);
     }
 
@@ -240,7 +241,7 @@ class GestaoDiasControllerTest extends TestCase
 
         $response = $this->putJson("/api/admin/gestao-dias/{$dia->id}", [
             'tipo' => 'tipo_invalido',
-            'horario_fim' => '25:00' // Hora inválida
+            'horario_fim' => '25:00', // Hora inválida
         ]);
 
         $response->assertStatus(422);
@@ -260,11 +261,11 @@ class GestaoDiasControllerTest extends TestCase
 
         $response->assertStatus(200)
             ->assertJson([
-                'message' => 'Dia excluído com sucesso'
+                'message' => 'Dia excluído com sucesso',
             ]);
 
         $this->assertDatabaseMissing('dias_fechados', [
-            'id' => $dia->id
+            'id' => $dia->id,
         ]);
     }
 
@@ -276,7 +277,7 @@ class GestaoDiasControllerTest extends TestCase
 
         $response->assertStatus(404)
             ->assertJson([
-                'message' => 'Dia não encontrado'
+                'message' => 'Dia não encontrado',
             ]);
     }
 
@@ -292,7 +293,7 @@ class GestaoDiasControllerTest extends TestCase
                 'horario_inicio' => '08:00',
                 'horario_fim' => '18:00',
                 'tipo' => $tipo,
-                'observacao' => "Teste para tipo {$tipo}"
+                'observacao' => "Teste para tipo {$tipo}",
             ];
 
             $response = $this->postJson('/api/admin/gestao-dias/store', $dadosDia);
@@ -300,7 +301,7 @@ class GestaoDiasControllerTest extends TestCase
             $response->assertStatus(201);
             $this->assertDatabaseHas('dias_fechados', [
                 'tipo' => $tipo,
-                'observacao' => "Teste para tipo {$tipo}"
+                'observacao' => "Teste para tipo {$tipo}",
             ]);
         }
     }

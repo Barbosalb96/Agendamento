@@ -10,7 +10,6 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
-
 Route::prefix('admin')->middleware('auth:sanctum')->group(function () {
     Route::prefix('gestao-dias')->group(function () {
         Route::get('/', [GestaoDiasController::class, 'index']);
@@ -22,7 +21,6 @@ Route::prefix('admin')->middleware('auth:sanctum')->group(function () {
 
     Route::prefix('agendamento')->middleware('auth:sanctum')->group(function () {
         Route::get('/', [AgendamentoControlador::class, 'index']);
-        Route::post('/', [AgendamentoControlador::class, 'agendar']);
         Route::get('/vagas-por-horario', [AgendamentoControlador::class, 'vagasPorHorario']);
         Route::get('/{uuid}', [AgendamentoControlador::class, 'show']);
         Route::delete('/{id}', [AgendamentoControlador::class, 'destroy']);
@@ -35,3 +33,5 @@ Route::post('/password/request-reset', [UsuarioControlador::class, 'requestReset
 
 Route::get('validar-qrcode/{uuid}', [UsuarioControlador::class, 'validarQRCode'])
     ->name('validar-qrcode');
+
+Route::post('/agendar', [AgendamentoControlador::class, 'agendar']);

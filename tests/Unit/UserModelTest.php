@@ -15,12 +15,12 @@ class UserModelTest extends TestCase
     {
         $user = User::factory()->create([
             'name' => 'João Test',
-            'email' => 'joao@test.com'
+            'email' => 'joao@test.com',
         ]);
 
         $this->assertDatabaseHas('users', [
             'name' => 'João Test',
-            'email' => 'joao@test.com'
+            'email' => 'joao@test.com',
         ]);
     }
 
@@ -35,7 +35,7 @@ class UserModelTest extends TestCase
     public function test_user_senha_e_hashed()
     {
         $user = User::factory()->create([
-            'password' => Hash::make('senha123')
+            'password' => Hash::make('senha123'),
         ]);
 
         $this->assertTrue(Hash::check('senha123', $user->password));

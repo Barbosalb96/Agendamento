@@ -18,6 +18,7 @@ class CriarAgendamentoServicoTest extends TestCase
     use RefreshDatabase;
 
     private CriarAgendamentoServico $servico;
+
     private User $usuario;
 
     protected function setUp(): void
@@ -25,8 +26,8 @@ class CriarAgendamentoServicoTest extends TestCase
         parent::setUp();
 
         $this->servico = new CriarAgendamentoServico(
-            new EloquentAgendamentoRepositorio(),
-            new EloquentUsuarioRepositorio()
+            new EloquentAgendamentoRepositorio,
+            new EloquentUsuarioRepositorio
         );
 
         $this->usuario = User::factory()->create();
@@ -35,19 +36,27 @@ class CriarAgendamentoServicoTest extends TestCase
     public function test_criar_agendamento_com_dados_validos()
     {
         $dados = [
-            'user_id' => $this->usuario->id,
+            'nome' => 'João da Silva',
+            'email' => 'teste@email.com',
+            'cpf' => '26085427397',
+            'rg' => '123456789',
+            'telefone' => '11987654321',
+            'nacionalidade' => 'brasileiro',
+            'nacionalidade_grupo' => 'brasileiro',
+            'deficiencia' => false,
             'data' => Carbon::tomorrow()->addDays(1)->format('Y-m-d'), // Evita segunda-feira
             'horario' => '14:00',
-            'quantidade' => 2,
+            'quantidade' => 1,
             'grupo' => false,
-            'observacao' => 'Agendamento teste'
+            'observacao' => 'Agendamento teste',
         ];
 
         $resultado = $this->servico->executar($dados);
 
         $this->assertDatabaseHas('agendamentos', [
-            'user_id' => $this->usuario->id,
-            'quantidade' => $dados['quantidade']
+            'email' => $dados['email'],
+            'cpf' => $dados['cpf'],
+            'quantidade' => $dados['quantidade'],
         ]);
     }
 
@@ -56,11 +65,17 @@ class CriarAgendamentoServicoTest extends TestCase
         $proximaSegunda = Carbon::now()->next(Carbon::MONDAY);
 
         $dados = [
-            'user_id' => $this->usuario->id,
+            'nome' => 'João da Silva',
+            'email' => 'teste2@email.com',
+            'cpf' => '11346402091',
+            'rg' => '123456789',
+            'telefone' => '11987654322',
+            'nacionalidade' => 'brasileiro',
+            'nacionalidade_grupo' => 'brasileiro',
             'data' => $proximaSegunda->format('Y-m-d'),
             'horario' => '14:00',
             'quantidade' => 1,
-            'grupo' => false
+            'grupo' => false,
         ];
 
         // Testa se agendamento é criado ou se lança exceção - ambos são aceitáveis
@@ -78,15 +93,21 @@ class CriarAgendamentoServicoTest extends TestCase
 
         DiasFechados::factory()->create([
             'data' => $dataFechada->format('Y-m-d'),
-            'tipo' => 'bloqueio_total'
+            'tipo' => 'bloqueio_total',
         ]);
 
         $dados = [
-            'user_id' => $this->usuario->id,
+            'nome' => 'João da Silva',
+            'email' => 'teste3@email.com',
+            'cpf' => '24016697772',
+            'rg' => '123456789',
+            'telefone' => '11987654323',
+            'nacionalidade' => 'brasileiro',
+            'nacionalidade_grupo' => 'brasileiro',
             'data' => $dataFechada->format('Y-m-d'),
             'horario' => '14:00',
             'quantidade' => 1,
-            'grupo' => false
+            'grupo' => false,
         ];
 
         // Testa se agendamento é rejeitado ou se lança exceção
@@ -109,15 +130,21 @@ class CriarAgendamentoServicoTest extends TestCase
         Agendamento::factory()->count(10)->create([
             'data' => $dataAgendamento->format('Y-m-d'),
             'horario' => '14:00',
-            'quantidade' => 5 // Total: 50 vagas
+            'quantidade' => 5, // Total: 50 vagas
         ]);
 
         $dados = [
-            'user_id' => $this->usuario->id,
+            'nome' => 'João da Silva',
+            'email' => 'teste4@email.com',
+            'cpf' => '05921809159',
+            'rg' => '123456789',
+            'telefone' => '11987654324',
+            'nacionalidade' => 'brasileiro',
+            'nacionalidade_grupo' => 'brasileiro',
             'data' => $dataAgendamento->format('Y-m-d'),
             'horario' => '14:00',
             'quantidade' => 1,
-            'grupo' => false
+            'grupo' => false,
         ];
 
         // Aceita tanto Exception genérico quanto ConflitoDeHorarioException
@@ -128,40 +155,52 @@ class CriarAgendamentoServicoTest extends TestCase
     public function test_criar_agendamento_individual()
     {
         $dados = [
-            'user_id' => $this->usuario->id,
+            'nome' => 'João da Silva',
+            'email' => 'teste5@email.com',
+            'cpf' => '35279336353',
+            'rg' => '123456789',
+            'telefone' => '11987654325',
+            'nacionalidade' => 'brasileiro',
+            'nacionalidade_grupo' => 'brasileiro',
             'data' => Carbon::tomorrow()->addDays(1)->format('Y-m-d'),
             'horario' => '10:00',
             'quantidade' => 1,
-            'grupo' => false
+            'grupo' => false,
         ];
 
         $resultado = $this->servico->executar($dados);
 
         $this->assertDatabaseHas('agendamentos', [
-            'user_id' => $this->usuario->id,
+            'email' => $dados['email'],
             'quantidade' => 1,
-            'grupo' => false
+            'grupo' => false,
         ]);
     }
 
     public function test_criar_agendamento_em_grupo()
     {
         $dados = [
-            'user_id' => $this->usuario->id,
+            'nome' => 'João da Silva',
+            'email' => 'teste6@email.com',
+            'cpf' => '80216860507',
+            'rg' => '123456789',
+            'telefone' => '11987654326',
+            'nacionalidade' => 'brasileiro',
+            'nacionalidade_grupo' => 'brasileiro',
             'data' => Carbon::tomorrow()->addDays(1)->format('Y-m-d'),
             'horario' => '15:00',
-            'quantidade' => 4,
+            'quantidade' => 15,
             'grupo' => true,
-            'observacao' => 'Agendamento em grupo'
+            'observacao' => 'Agendamento em grupo',
         ];
 
         $resultado = $this->servico->executar($dados);
 
         $this->assertDatabaseHas('agendamentos', [
-            'user_id' => $this->usuario->id,
-            'quantidade' => 4,
+            'email' => $dados['email'],
+            'quantidade' => 15,
             'grupo' => true,
-            'observacao' => 'Agendamento em grupo'
+            'observacao' => 'Agendamento em grupo',
         ]);
     }
 }

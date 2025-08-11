@@ -2,19 +2,17 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Validation\Validator;
 use Carbon\Carbon;
+use Illuminate\Validation\Validator;
 
 class FilterAgendamentoRequest extends BaseRequest
 {
     public function rules(): array
     {
         return array_merge(parent::rules(), [
-            'data'        => ['nullable', 'string'],
+            'data' => ['nullable', 'string'],
             'data_inicio' => ['nullable', 'string'],
-            'data_fim'    => ['nullable', 'string'],
-            'status'      => ['nullable', 'in:ativo,cancelado,finalizado'],
-            'user_id'     => ['nullable', 'integer', 'exists:users,id'],
+            'data_fim' => ['nullable', 'string'],
         ]);
     }
 
@@ -33,9 +31,12 @@ class FilterAgendamentoRequest extends BaseRequest
     public function parsed(string $key): ?string
     {
         $value = $this->input($key);
-        if (! $value) return null;
+        if (! $value) {
+            return null;
+        }
 
         $d = $this->parseDate($value);
+
         return $d?->format('Y-m-d');
     }
 
@@ -45,8 +46,10 @@ class FilterAgendamentoRequest extends BaseRequest
         foreach ($formats as $f) {
             try {
                 return Carbon::createFromFormat($f, $value)->startOfDay();
-            } catch (\Throwable) {}
+            } catch (\Throwable) {
+            }
         }
+
         return null;
     }
 }

@@ -21,18 +21,24 @@ class UsuarioControlador extends Controller
      *     tags={"Autenticação"},
      *     summary="Login do usuário",
      *     description="Autentica um usuário e retorna um token de acesso",
+     *
      *     @OA\RequestBody(
      *         required=true,
+     *
      *         @OA\JsonContent(
      *             required={"email","password"},
+     *
      *             @OA\Property(property="email", type="string", format="email", example="user@example.com"),
      *             @OA\Property(property="password", type="string", example="password123")
      *         )
      *     ),
+     *
      *     @OA\Response(
      *         response=200,
      *         description="Login realizado com sucesso",
+     *
      *         @OA\JsonContent(
+     *
      *             @OA\Property(property="token", type="string", example="1|abc123..."),
      *             @OA\Property(property="user", type="object",
      *                 @OA\Property(property="id", type="integer", example=1),
@@ -41,10 +47,13 @@ class UsuarioControlador extends Controller
      *             )
      *         )
      *     ),
+     *
      *     @OA\Response(
      *         response=401,
      *         description="Credenciais inválidas",
+     *
      *         @OA\JsonContent(
+     *
      *             @OA\Property(property="mensagem", type="string", example="Usuário ou senha inválidos")
      *         )
      *     )
@@ -74,26 +83,35 @@ class UsuarioControlador extends Controller
      *     tags={"Autenticação"},
      *     summary="Redefinir senha",
      *     description="Redefine a senha do usuário usando token de reset",
+     *
      *     @OA\RequestBody(
      *         required=true,
+     *
      *         @OA\JsonContent(
      *             required={"email","token","nova_senha"},
+     *
      *             @OA\Property(property="email", type="string", format="email", example="user@example.com"),
      *             @OA\Property(property="token", type="string", example="abc123..."),
      *             @OA\Property(property="nova_senha", type="string", example="newpassword123")
      *         )
      *     ),
+     *
      *     @OA\Response(
      *         response=200,
      *         description="Senha redefinida com sucesso",
+     *
      *         @OA\JsonContent(
+     *
      *             @OA\Property(property="mensagem", type="string", example="Senha redefinida com sucesso")
      *         )
      *     ),
+     *
      *     @OA\Response(
      *         response=400,
      *         description="Erro na redefinição",
+     *
      *         @OA\JsonContent(
+     *
      *             @OA\Property(property="mensagem", type="string", example="Token inválido")
      *         )
      *     )
@@ -117,17 +135,23 @@ class UsuarioControlador extends Controller
      *     tags={"Autenticação"},
      *     summary="Solicitar reset de senha",
      *     description="Solicita um token para reset de senha por email",
+     *
      *     @OA\RequestBody(
      *         required=true,
+     *
      *         @OA\JsonContent(
      *             required={"email"},
+     *
      *             @OA\Property(property="email", type="string", format="email", example="user@example.com")
      *         )
      *     ),
+     *
      *     @OA\Response(
      *         response=200,
      *         description="Token enviado",
+     *
      *         @OA\JsonContent(
+     *
      *             @OA\Property(property="mensagem", type="string", example="Token enviado para o e-mail se existir um usuário com esse e-mail.")
      *         )
      *     )
@@ -148,16 +172,21 @@ class UsuarioControlador extends Controller
      *     tags={"QR Code"},
      *     summary="Validar QR Code",
      *     description="Valida um QR Code de agendamento",
+     *
      *     @OA\Parameter(
      *         name="uuid",
      *         in="path",
      *         required=true,
+     *
      *         @OA\Schema(type="string", example="abc123-def456-ghi789")
      *     ),
+     *
      *     @OA\Response(
      *         response=200,
      *         description="QR Code válido",
+     *
      *         @OA\JsonContent(
+     *
      *             @OA\Property(property="mensagem", type="string", example="QR Code válido"),
      *             @OA\Property(property="agendamento", type="object",
      *                 @OA\Property(property="data", type="string", example="15/12/2023"),
@@ -168,10 +197,13 @@ class UsuarioControlador extends Controller
      *             )
      *         )
      *     ),
+     *
      *     @OA\Response(
      *         response=400,
      *         description="QR Code inválido",
+     *
      *         @OA\JsonContent(
+     *
      *             @OA\Property(property="mensagem", type="string", example="QR Code inválido ou agendamento não encontrado")
      *         )
      *     )

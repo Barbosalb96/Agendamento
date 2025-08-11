@@ -29,7 +29,7 @@ return Application::configure(basePath: dirname(__DIR__))
             return response()->json([
                 'mensagem' => 'Registro não encontrado.',
                 'erro' => 'O recurso solicitado não existe no sistema.',
-                'codigo' => 404
+                'codigo' => 404,
             ], 404);
         });
 
@@ -37,7 +37,7 @@ return Application::configure(basePath: dirname(__DIR__))
             return response()->json([
                 'mensagem' => 'Página ou endpoint não encontrado.',
                 'erro' => 'A URL solicitada não existe neste servidor.',
-                'codigo' => 404
+                'codigo' => 404,
             ], 404);
         });
 
@@ -45,7 +45,7 @@ return Application::configure(basePath: dirname(__DIR__))
             return response()->json([
                 'mensagem' => 'Acesso não autorizado.',
                 'erro' => 'Você precisa estar autenticado para acessar este recurso.',
-                'codigo' => 401
+                'codigo' => 401,
             ], 401);
         });
 
@@ -53,7 +53,7 @@ return Application::configure(basePath: dirname(__DIR__))
             return response()->json([
                 'mensagem' => 'Acesso negado.',
                 'erro' => 'Você não possui permissão para realizar esta ação.',
-                'codigo' => 403
+                'codigo' => 403,
             ], 403);
         });
 
@@ -62,7 +62,7 @@ return Application::configure(basePath: dirname(__DIR__))
                 'mensagem' => 'Dados inválidos fornecidos.',
                 'erro' => 'Verifique os campos obrigatórios e tente novamente.',
                 'erros_validacao' => $e->errors(),
-                'codigo' => 422
+                'codigo' => 422,
             ], 422);
         });
 
@@ -81,7 +81,7 @@ return Application::configure(basePath: dirname(__DIR__))
             ];
 
             ExceptionLog::create($errorData);
-            
+
             // Enviar email de notificação de erro
             dispatch(new MailDispatchDefault(
                 'Error aplicação Agendamento - Governo do Maranhão',
@@ -94,11 +94,11 @@ return Application::configure(basePath: dirname(__DIR__))
                 'barbosalucaslbs96@gmail.com',
             ));
 
-            return response()->json([
-                'mensagem' => 'Erro interno do servidor.',
-                'erro' => 'Ocorreu um erro inesperado. Nossa equipe técnica foi notificada.',
-                'codigo' => 500,
-                'contato' => 'Se o problema persistir, entre em contato com o suporte técnico.'
-            ], 500);
+//            return response()->json([
+//                'mensagem' => 'Erro interno do servidor.',
+//                'erro' => 'Ocorreu um erro inesperado. Nossa equipe técnica foi notificada.',
+//                'codigo' => 500,
+//                'contato' => 'Se o problema persistir, entre em contato com o suporte técnico.',
+//            ], 500);
         });
     })->create();

@@ -18,14 +18,14 @@ class AgendamentoModelTest extends TestCase
         $agendamento = Agendamento::factory()->create([
             'user_id' => $user->id,
             'quantidade' => 3,
-            'grupo' => true
+            'grupo' => true,
         ]);
 
         $this->assertDatabaseHas('agendamentos', [
             'id' => $agendamento->id,
             'user_id' => $user->id,
             'quantidade' => 3,
-            'grupo' => true
+            'grupo' => true,
         ]);
     }
 
@@ -47,7 +47,7 @@ class AgendamentoModelTest extends TestCase
     public function test_agendamento_data_formatada()
     {
         $agendamento = Agendamento::factory()->create([
-            'data' => '2025-12-15'
+            'data' => '2025-12-15',
         ]);
 
         $this->assertEquals('15/12/2025', $agendamento->data_formatada);
@@ -56,7 +56,7 @@ class AgendamentoModelTest extends TestCase
     public function test_agendamento_horario_formatado()
     {
         $agendamento = Agendamento::factory()->create([
-            'horario' => '14:30'
+            'horario' => '14:30',
         ]);
 
         $this->assertEquals('14:30', $agendamento->horario_formatado);
@@ -65,9 +65,9 @@ class AgendamentoModelTest extends TestCase
     public function test_usuario_tem_agendamentos()
     {
         $user = User::factory()->create();
-        
+
         Agendamento::factory()->count(3)->create([
-            'user_id' => $user->id
+            'user_id' => $user->id,
         ]);
 
         $this->assertCount(3, $user->agendamentos);

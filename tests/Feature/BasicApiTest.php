@@ -24,12 +24,12 @@ class BasicApiTest extends TestCase
     {
         $user = User::factory()->create([
             'email' => 'test@example.com',
-            'password' => Hash::make('password123')
+            'password' => Hash::make('password123'),
         ]);
 
         $response = $this->postJson('/api/login', [
             'email' => 'test@example.com',
-            'password' => 'password123'
+            'password' => 'password123',
         ]);
 
         $response->assertStatus(200)
@@ -40,7 +40,7 @@ class BasicApiTest extends TestCase
     {
         $response = $this->postJson('/api/login', [
             'email' => 'invalid@example.com',
-            'password' => 'wrongpassword'
+            'password' => 'wrongpassword',
         ]);
 
         $response->assertStatus(401);
@@ -67,9 +67,9 @@ class BasicApiTest extends TestCase
     public function test_password_reset_request_endpoint_exists()
     {
         $this->markTestSkipped('Reset de senha tem problema com log de exceções - será corrigido posteriormente');
-        
+
         $response = $this->postJson('/api/password/request-reset', [
-            'email' => 'test@example.com'
+            'email' => 'test@example.com',
         ]);
 
         $response->assertStatus(200);
@@ -91,7 +91,7 @@ class BasicApiTest extends TestCase
     public function test_qr_code_validation_endpoint_exists()
     {
         $fakeUuid = '12345678-1234-1234-1234-123456789012';
-        
+
         $response = $this->getJson("/api/validar-qrcode/{$fakeUuid}");
 
         // Deve retornar 200 com mensagem de QR Code inválido

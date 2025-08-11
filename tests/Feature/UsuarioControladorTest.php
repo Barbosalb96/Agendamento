@@ -34,14 +34,14 @@ class UsuarioControladorTest extends TestCase
                 'user' => [
                     'id',
                     'nome',
-                    'email'
-                ]
+                    'email',
+                ],
             ])
             ->assertJson([
                 'user' => [
                     'nome' => 'João Silva',
-                    'email' => 'joao@teste.com'
-                ]
+                    'email' => 'joao@teste.com',
+                ],
             ]);
     }
 
@@ -59,7 +59,7 @@ class UsuarioControladorTest extends TestCase
 
         $response->assertStatus(401)
             ->assertJson([
-                'mensagem' => 'Usuário ou senha inválidos'
+                'mensagem' => 'Usuário ou senha inválidos',
             ]);
     }
 
@@ -72,7 +72,7 @@ class UsuarioControladorTest extends TestCase
 
         $response->assertStatus(401)
             ->assertJson([
-                'mensagem' => 'Usuário ou senha inválidos'
+                'mensagem' => 'Usuário ou senha inválidos',
             ]);
     }
 
@@ -98,7 +98,7 @@ class UsuarioControladorTest extends TestCase
 
         $response->assertStatus(200)
             ->assertJson([
-                'mensagem' => 'Token enviado para o e-mail se existir um usuário com esse e-mail.'
+                'mensagem' => 'Token enviado para o e-mail se existir um usuário com esse e-mail.',
             ]);
     }
 
@@ -129,7 +129,7 @@ class UsuarioControladorTest extends TestCase
         $tokenRecord = DB::table('password_resets')->where('email', 'reset@teste.com')->first();
 
         // Se não encontrou token, pula o teste
-        if (!$tokenRecord) {
+        if (! $tokenRecord) {
             $this->markTestSkipped('Password reset não implementado completamente');
         }
 
@@ -176,11 +176,11 @@ class UsuarioControladorTest extends TestCase
         $response = $this->getJson("/api/validar-qrcode/{$agendamento->uuid}");
 
         $response->assertStatus(200);
-        
+
         // Verifica se a resposta contém uma mensagem
         $responseData = $response->json();
         $this->assertArrayHasKey('mensagem', $responseData);
-        
+
         // Verifica se é uma validação bem-sucedida
         $this->assertStringContainsString('válido', $responseData['mensagem'], 'QR Code validation should be successful');
     }
@@ -193,7 +193,7 @@ class UsuarioControladorTest extends TestCase
 
         $response->assertStatus(200)
             ->assertJson([
-                'mensagem' => 'QR Code inválido ou agendamento não encontrado'
+                'mensagem' => 'QR Code inválido ou agendamento não encontrado',
             ]);
     }
 
@@ -212,7 +212,7 @@ class UsuarioControladorTest extends TestCase
 
         $response->assertStatus(200)
             ->assertJson([
-                'mensagem' => 'QR Code inválido horario de agendamento superior a hora marcada'
+                'mensagem' => 'QR Code inválido horario de agendamento superior a hora marcada',
             ]);
     }
 }

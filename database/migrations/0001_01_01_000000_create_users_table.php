@@ -16,12 +16,8 @@ return new class extends Migration
             $table->uuid('id_public')->unique();
             $table->string('name');
             $table->string('email')->unique();
-            $table->string('cpf', 14)->unique();
-            $table->string('rg', 20)->unique();
-            $table->string('eelefone', 11)->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->enum('perfil', ['admin', 'individual', 'grupo'])->default('individual');
             $table->rememberToken();
             $table->timestamps();
         });

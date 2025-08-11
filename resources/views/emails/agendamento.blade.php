@@ -85,7 +85,7 @@ $uri = (new QrCodeGenerator())->generateAndSave($body['agendamento']->uuid);
 <div class="container">
     @include("emails.header")
     <h1>Confirmação de Agendamento</h1>
-    <p>Olá <strong>{{ $body['agendamento']->user->name }}</strong>,</p>
+    <p>Olá <strong>{{ $body['agendamento']->nome }}</strong>,</p>
     <p>Recebemos sua solicitação para agendamento de visita ao Palácio dos Leões.</p>
     <p>Data: <strong>{{ Carbon::parse($body['agendamento']->data)->format('d/m/Y') }}</strong></p>
     <p>Horário: <strong>{{ Carbon::parse($body['agendamento']->horario)->format('H:i') }}</strong></p>

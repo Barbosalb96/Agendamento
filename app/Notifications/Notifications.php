@@ -12,10 +12,10 @@ class Notifications
             'Agendamento - Governo do Maranhão',
             [
                 'agendamento' => $agendamento,
-                'usuario' => $agendamento->user,
+                'usuario' => null, // No user relationship anymore
             ],
             'agendamento',
-            $agendamento->user->email,
+            $agendamento->email, // Use email directly from agendamento
         ));
     }
 }

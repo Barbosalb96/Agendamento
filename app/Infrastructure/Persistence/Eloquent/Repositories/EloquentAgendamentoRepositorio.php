@@ -40,17 +40,15 @@ class EloquentAgendamentoRepositorio implements ContratoAgendamentoRepositorio
         $dataFim = $this->normalizeDate($filter['data_fim'] ?? null);
 
         $query = Agendamento::query()
-            ->when(!empty($filter['user_id']), fn($q) => $q->where('user_id', $filter['user_id']))
-            ->when(!empty($filter['status']), fn($q) => $q->where('status', $filter['status']))
-            ->when($data, fn($q) => $q->whereDate('data', $data))
-            ->when($dataInicio && $dataFim, fn($q) => $q->whereBetween('data', [$dataInicio, $dataFim]))
-            ->when($dataInicio && !$dataFim, fn($q) => $q->whereDate('data', '>=', $dataInicio))
-            ->when($dataFim && !$dataInicio, fn($q) => $q->whereDate('data', '<=', $dataFim))
+            ->when($data, fn ($q) => $q->whereDate('data', $data))
+            ->when($dataInicio && $dataFim, fn ($q) => $q->whereBetween('data', [$dataInicio, $dataFim]))
+            ->when($dataInicio && ! $dataFim, fn ($q) => $q->whereDate('data', '>=', $dataInicio))
+            ->when($dataFim && ! $dataInicio, fn ($q) => $q->whereDate('data', '<=', $dataFim))
             ->orderByDesc('data')
             ->orderBy('horario');
 
-        $perPage = isset($filter['per_page']) ? (int)$filter['per_page'] : 10;
-        $page = isset($filter['page']) ? (int)$filter['page'] : 1;
+        $perPage = isset($filter['per_page']) ? (int) $filter['per_page'] : 10;
+        $page = isset($filter['page']) ? (int) $filter['page'] : 1;
 
         return $query
             ->paginate(perPage: $perPage, page: $page)
@@ -64,7 +62,9 @@ class EloquentAgendamentoRepositorio implements ContratoAgendamentoRepositorio
 
     private function normalizeDate(?string $value): ?string
     {
-        if (!$value) return null;
+        if (! $value) {
+            return null;
+        }
 
         $formats = ['Y-m-d', 'd-m-Y', 'd/m/Y'];
         foreach ($formats as $f) {
@@ -73,6 +73,7 @@ class EloquentAgendamentoRepositorio implements ContratoAgendamentoRepositorio
             } catch (\Throwable) {
             }
         }
+
         return null;
     }
 }

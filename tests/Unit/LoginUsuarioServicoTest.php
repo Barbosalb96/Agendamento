@@ -20,7 +20,7 @@ class LoginUsuarioServicoTest extends TestCase
         parent::setUp();
 
         $this->servico = new LoginUsuarioServico(
-            new EloquentUsuarioRepositorio()
+            new EloquentUsuarioRepositorio
         );
     }
 
@@ -29,7 +29,7 @@ class LoginUsuarioServicoTest extends TestCase
         $user = User::factory()->create([
             'name' => 'João Teste',
             'email' => 'joao@teste.com',
-            'password' => Hash::make('senha123')
+            'password' => Hash::make('senha123'),
         ]);
 
         $resultado = $this->servico->executar('joao@teste.com', 'senha123');
@@ -44,7 +44,7 @@ class LoginUsuarioServicoTest extends TestCase
     {
         $user = User::factory()->create([
             'email' => 'joao@teste.com',
-            'password' => Hash::make('senha123')
+            'password' => Hash::make('senha123'),
         ]);
 
         $this->expectException(\Exception::class);
@@ -67,7 +67,7 @@ class LoginUsuarioServicoTest extends TestCase
     {
         $user = User::factory()->create([
             'email' => 'joao@teste.com',
-            'password' => Hash::make('senha123')
+            'password' => Hash::make('senha123'),
         ]);
 
         $this->expectException(\Exception::class);
@@ -78,7 +78,7 @@ class LoginUsuarioServicoTest extends TestCase
     {
         $user = User::factory()->create([
             'email' => 'joao@teste.com',
-            'password' => Hash::make('Senha123')
+            'password' => Hash::make('Senha123'),
         ]);
 
         // Deve falhar com senha em case diferente
@@ -91,11 +91,11 @@ class LoginUsuarioServicoTest extends TestCase
         $user = User::factory()->create([
             'name' => 'Test User',
             'email' => 'test@example.com',
-            'password' => Hash::make('senha123')
+            'password' => Hash::make('senha123'),
         ]);
 
         $resultado = $this->servico->executar('test@example.com', 'senha123');
-        
+
         $this->assertNotNull($resultado);
         $this->assertEquals($user->id, $resultado->id);
         $this->assertEquals('Test User', $resultado->nome);

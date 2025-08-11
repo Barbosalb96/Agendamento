@@ -8,7 +8,7 @@ Route::get('/', function () {
         'ip' => request()->ip(),
         'user_agent' => request()->userAgent(),
         'timestamp' => now(),
-        'url' => request()->fullUrl()
+        'url' => request()->fullUrl(),
     ]);
 
     return view('governo');

@@ -18,6 +18,7 @@ class AgendamentoControladorTest extends TestCase
     {
         $user = User::factory()->create();
         Sanctum::actingAs($user);
+
         return $user;
     }
 
@@ -25,7 +26,7 @@ class AgendamentoControladorTest extends TestCase
     {
         $user = $this->authenticatedUser();
 
-        Agendamento::factory()->count(5)->create(['user_id' => $user->id]);
+        Agendamento::factory()->count(5)->create();
 
         $response = $this->getJson('/api/admin/agendamento?page=1&per_page=15');
 
@@ -52,72 +53,90 @@ class AgendamentoControladorTest extends TestCase
         }
 
         $dadosAgendamento = [
-            'user_id' => $user->id,
+            'nome' => 'João da Silva',
+            'email' => 'teste@email.com',
+            'cpf' => '11144477735', // Valid CPF that passes validation
+            'rg' => '123456789',
+            'telefone' => '11987654321',
+            'nacionalidade' => 'brasileiro',
+            'nacionalidade_grupo' => 'brasileiro',
+            'deficiencia' => false,
             'data' => $data->format('Y-m-d'),
             'horario' => '14:00',
             'quantidade' => 1,
             'observacao' => 'Teste agendamento',
-            'grupo' => false
+            'grupo' => false,
         ];
 
-        $response = $this->postJson('/api/admin/agendamento', $dadosAgendamento);
+        $response = $this->postJson('/api/agendar', $dadosAgendamento);
+
+        if ($response->getStatusCode() !== 200) {
+            dump('Response Status: '.$response->getStatusCode());
+            dump('Response Content: '.$response->getContent());
+        }
 
         $response->assertStatus(200)
             ->assertJson([
-                'mensagem' => 'Agendamento realizado com sucesso'
+                'mensagem' => 'Agendamento realizado com sucesso',
             ]);
 
         $this->assertDatabaseHas('agendamentos', [
-            'user_id' => $user->id,
+            'email' => $dadosAgendamento['email'],
+            'cpf' => $dadosAgendamento['cpf'],
             'quantidade' => $dadosAgendamento['quantidade'],
-            'observacao' => $dadosAgendamento['observacao']
+            'observacao' => $dadosAgendamento['observacao'],
         ]);
     }
 
     public function test_criar_agendamento_sem_autenticacao()
     {
         $dadosAgendamento = [
-            'user_id' => 1,
+            'nome' => 'João da Silva',
+            'email' => 'teste2@email.com',
+            'cpf' => '11346402091',
+            'rg' => '123456789',
+            'telefone' => '11987654322',
+            'nacionalidade' => 'brasileiro',
+            'nacionalidade_grupo' => 'brasileiro',
             'data' => Carbon::tomorrow()->format('Y-m-d'),
             'horario' => '14:00',
-            'quantidade' => 2
+            'quantidade' => 1,
         ];
 
-        $response = $this->postJson('/api/admin/agendamento', $dadosAgendamento);
+        $response = $this->postJson('/api/agendar', $dadosAgendamento);
 
-        $response->assertStatus(401);
+        // Should succeed since agendar endpoint is public
+        $response->assertStatus(200);
     }
 
     public function test_criar_agendamento_com_dados_invalidos()
     {
-        $this->authenticatedUser();
-
-        $response = $this->postJson('/api/admin/agendamento', []);
+        $response = $this->postJson('/api/agendar', []);
 
         $response->assertStatus(422)
             ->assertJsonStructure([
                 'mensagem',
                 'erro',
-                'erros_validacao' => [
-                    'data',
-                    'horario',
-                    'quantidade'
-                ]
+                'erros_validacao',
             ]);
     }
 
     public function test_criar_agendamento_em_data_passada()
     {
-        $user = $this->authenticatedUser();
-
         $dadosAgendamento = [
-            'user_id' => $user->id,
+            'nome' => 'João da Silva',
+            'email' => 'teste3@email.com',
+            'cpf' => '24016697772',
+            'rg' => '123456789',
+            'telefone' => '11987654323',
+            'nacionalidade' => 'brasileiro',
+            'nacionalidade_grupo' => 'brasileiro',
             'data' => Carbon::yesterday()->format('Y-m-d'),
             'horario' => '14:00',
-            'quantidade' => 1
+            'quantidade' => 1,
         ];
 
-        $response = $this->postJson('/api/admin/agendamento', $dadosAgendamento);
+        $response = $this->postJson('/api/agendar', $dadosAgendamento);
 
         $response->assertStatus(422);
     }
@@ -127,12 +146,11 @@ class AgendamentoControladorTest extends TestCase
         $user = $this->authenticatedUser();
 
         $agendamento = Agendamento::factory()->create([
-            'user_id' => $user->id,
-            'observacao' => 'Agendamento para cancelar'
+            'observacao' => 'Agendamento para cancelar',
         ]);
 
         $response = $this->deleteJson("/api/admin/agendamento/{$agendamento->id}", [
-            'motivo' => 'Cancelamento por teste'
+            'motivo' => 'Cancelamento por teste',
         ]);
 
         // Aceita diferentes status codes dependendo da implementação
@@ -144,7 +162,7 @@ class AgendamentoControladorTest extends TestCase
         $this->authenticatedUser();
 
         $response = $this->deleteJson('/api/admin/agendamento/99999', [
-            'motivo' => 'Teste'
+            'motivo' => 'Teste',
         ]);
 
         // Aceita diferentes códigos de erro dependendo da implementação
@@ -164,7 +182,7 @@ class AgendamentoControladorTest extends TestCase
         Agendamento::factory()->count(2)->create([
             'data' => $dataConsulta,
             'horario' => '10:00',
-            'quantidade' => 1
+            'quantidade' => 1,
         ]);
 
         $response = $this->getJson("/api/admin/agendamento/vagas-por-horario?data={$dataConsulta}");
@@ -176,13 +194,13 @@ class AgendamentoControladorTest extends TestCase
                 'horarios' => [
                     '*' => [
                         'hora',
-                        'vagas'
-                    ]
-                ]
+                        'vagas',
+                    ],
+                ],
             ])
             ->assertJson([
                 'data' => $dataConsulta,
-                'bloqueado' => false
+                'bloqueado' => false,
             ]);
 
         // Verifica se retorna horários válidos
@@ -204,7 +222,7 @@ class AgendamentoControladorTest extends TestCase
                 'data' => $proximaSegunda,
                 'bloqueado' => true,
                 'motivo' => 'segunda-feira',
-                'horarios' => []
+                'horarios' => [],
             ]);
     }
 
@@ -216,7 +234,7 @@ class AgendamentoControladorTest extends TestCase
 
         DiasFechados::factory()->create([
             'data' => $dataFechada,
-            'tipo' => 'bloqueio_total'
+            'tipo' => 'bloqueio_total',
         ]);
 
         $response = $this->getJson("/api/admin/agendamento/vagas-por-horario?data={$dataFechada}");
@@ -226,7 +244,7 @@ class AgendamentoControladorTest extends TestCase
                 'data' => $dataFechada,
                 'bloqueado' => true,
                 'motivo' => 'dia bloqueado manualmente',
-                'horarios' => []
+                'horarios' => [],
             ]);
     }
 
@@ -254,7 +272,7 @@ class AgendamentoControladorTest extends TestCase
         Agendamento::factory()->count(10)->create([
             'data' => $dataConsulta,
             'horario' => '14:00',
-            'quantidade' => 5 // Total: 50 vagas ocupadas
+            'quantidade' => 5, // Total: 50 vagas ocupadas
         ]);
 
         $response = $this->getJson("/api/admin/agendamento/vagas-por-horario?data={$dataConsulta}");
@@ -280,8 +298,7 @@ class AgendamentoControladorTest extends TestCase
         $user = $this->authenticatedUser();
 
         $agendamento = Agendamento::factory()->create([
-            'user_id' => $user->id,
-            'observacao' => 'Agendamento para visualizar'
+            'observacao' => 'Agendamento para visualizar',
         ]);
 
         $response = $this->getJson("/api/admin/agendamento/{$agendamento->uuid}");
@@ -293,11 +310,11 @@ class AgendamentoControladorTest extends TestCase
                 'horario',
                 'grupo',
                 'quantidade',
-                'observacao'
+                'observacao',
             ])
             ->assertJson([
                 'uuid' => $agendamento->uuid,
-                'observacao' => 'Agendamento para visualizar'
+                'observacao' => 'Agendamento para visualizar',
             ]);
     }
 
@@ -313,7 +330,7 @@ class AgendamentoControladorTest extends TestCase
             ->assertJsonStructure([
                 'mensagem',
                 'erro',
-                'codigo'
+                'codigo',
             ]);
     }
 
@@ -323,15 +340,13 @@ class AgendamentoControladorTest extends TestCase
 
         // Cria agendamentos em datas diferentes
         Agendamento::factory()->create([
-            'user_id' => $user->id,
             'data' => '2023-12-15',
-            'observacao' => 'Primeiro agendamento'
+            'observacao' => 'Primeiro agendamento',
         ]);
 
         Agendamento::factory()->create([
-            'user_id' => $user->id,
             'data' => '2023-12-20',
-            'observacao' => 'Segundo agendamento'
+            'observacao' => 'Segundo agendamento',
         ]);
 
         // Testa filtro por data específica

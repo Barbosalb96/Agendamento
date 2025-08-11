@@ -3,6 +3,7 @@
 namespace App\Application\Agendamentos\Services;
 
 use App\Domains\Agendamento\Repositories\ContratoAgendamentoRepositorio;
+
 class ListarAgendamentoServico
 {
     public function __construct(

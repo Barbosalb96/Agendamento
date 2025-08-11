@@ -1,61 +1,186 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Sistema de Agendamento
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+API REST desenvolvida em Laravel para gerenciamento de agendamentos com autenticação JWT, gestão de dias fechados e QR Code para validação.
 
-## About Laravel
+## 🚀 Funcionalidades
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- **Autenticação JWT**: Sistema de login seguro com tokens
+- **Gestão de Agendamentos**: CRUD completo para agendamentos
+- **Gestão de Dias**: Controle de dias fechados/disponíveis
+- **QR Code**: Geração e validação de códigos QR
+- **Email Notifications**: Envio de emails para confirmação e cancelamento
+- **Documentação Swagger**: API documentada automaticamente
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## 📋 Pré-requisitos
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- PHP 8.1+
+- Composer
+- MySQL/PostgreSQL
+- Docker (opcional)
 
-## Learning Laravel
+## 🛠️ Instalação
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### Via Docker
+```bash
+docker-compose up -d
+```
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+### Manual
+```bash
+# Clone o repositório
+git clone <repository-url>
+cd agendamento
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+# Instale as dependências
+composer install
 
-## Laravel Sponsors
+# Configure o ambiente
+cp .env.example .env
+php artisan key:generate
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+# Execute as migrações
+php artisan migrate --seed
 
-### Premium Partners
+# Inicie o servidor
+php artisan serve
+```
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+## 🔧 Configuração
 
-## Contributing
+### Banco de Dados
+Configure as credenciais do banco no arquivo `.env`:
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=agendamento
+DB_USERNAME=root
+DB_PASSWORD=
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### JWT
+Configure a chave JWT:
+```bash
+php artisan jwt:secret
+```
 
-## Code of Conduct
+### Email
+Configure o provedor de email no `.env`:
+```env
+MAIL_MAILER=smtp
+MAIL_HOST=mailhog
+MAIL_PORT=1025
+MAIL_USERNAME=null
+MAIL_PASSWORD=null
+MAIL_ENCRYPTION=null
+MAIL_FROM_ADDRESS=noreply@agendamento.com
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## 📚 Documentação da API
 
-## Security Vulnerabilities
+A documentação completa da API está disponível em:
+- **Desenvolvimento**: `http://localhost:8000/api/documentation`
+- **Produção**: `https://sua-url.com/api/documentation`
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### Principais Endpoints
 
-## License
+#### Autenticação
+- `POST /api/login` - Login do usuário
+- `POST /api/password/request-reset` - Solicitar reset de senha
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+#### Agendamentos
+- `GET /api/admin/agendamento` - Listar agendamentos
+- `POST /api/admin/agendamento` - Criar agendamento
+- `DELETE /api/admin/agendamento/{id}` - Cancelar agendamento
+
+#### Gestão de Dias
+- `GET /api/admin/gestao-dias` - Listar dias
+- `POST /api/admin/gestao-dias/store` - Criar/bloquear dia
+
+#### Validação
+- `GET /api/validar-qrcode/{uuid}` - Validar QR Code
+
+## 🧪 Testes
+
+Execute a suíte completa de testes:
+```bash
+# Todos os testes
+php artisan test
+
+# Testes específicos
+php artisan test --filter="LoginTest"
+
+# Testes por categoria
+php artisan test --testsuite=Feature
+php artisan test --testsuite=Unit
+```
+
+Para mais detalhes sobre os testes, consulte [TESTS_README.md](TESTS_README.md).
+
+## 🏗️ Arquitetura
+
+O projeto segue os princípios de **Clean Architecture** e **Domain-Driven Design**:
+
+```
+app/
+├── Application/          # Casos de uso e serviços de aplicação
+├── Domains/             # Entidades e regras de negócio
+├── Infrastructure/      # Implementações de repositórios
+└── Http/               # Controllers e recursos da API
+```
+
+### Padrões Utilizados
+- **Repository Pattern**: Abstração da camada de dados
+- **Service Layer**: Lógica de negócio centralizada
+- **DTO Pattern**: Transferência segura de dados
+- **Factory Pattern**: Criação de objetos complexos
+
+## 🔒 Segurança
+
+- Autenticação JWT com expiração configurável
+- Validação rigorosa de entrada de dados
+- Middleware de autorização por rotas
+- Hash seguro de senhas com bcrypt
+- Rate limiting para endpoints sensíveis
+
+## 📦 Dependências Principais
+
+- **Laravel Framework**: Base do projeto
+- **JWT-Auth**: Autenticação JSON Web Token  
+- **L5-Swagger**: Documentação automática da API
+- **PHPUnit**: Testes automatizados
+- **Faker**: Geração de dados para testes
+
+## 🚀 Deploy
+
+### Preparação
+```bash
+# Otimizações de produção
+composer install --no-dev --optimize-autoloader
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+```
+
+### Variáveis de Ambiente
+```env
+APP_ENV=production
+APP_DEBUG=false
+APP_URL=https://sua-url.com
+```
+
+## 📝 Changelog
+
+Veja [CHANGELOG.md](CHANGELOG.md) para histórico de versões.
+
+## 🤝 Contribuição
+
+1. Fork o projeto
+2. Crie uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
+3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
+4. Push para a branch (`git push origin feature/AmazingFeature`)
+5. Abra um Pull Request
+
+## 📄 Licença
+
+Este projeto está licenciado sob a [MIT License](https://opensource.org/licenses/MIT).
